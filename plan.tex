@@ -1,0 +1,62 @@
+\documentclass[10pt,a4paper,oneside]{article}
+\usepackage{polski}
+\usepackage[cp1250]{inputenc}
+\usepackage{listings}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\title{Dokumentacja projektu archiwizer
+\\{\large Oprogramowanie kryptograficzne}}
+\author{Anna Reichel}
+\begin{document}
+\maketitle
+\section{Opis projektu}
+Celem projektu jest stworzenie aplikacji s³u¿¹cej do archiwizacji danych. Podczas pierwszego u¿ycia aplikacji, obliczany na podstawie danych sprzêtowych bêdzie identyfikator(ID) jednostki. Na podstawie ID, dystrybutor przydziela³ bêdzie klucz produktu. U¿ytkownik bêdzie móg³ stworzyæ has³o do aplikacji. Aplikacja sprawdzaæ bêdzie, czy w ju¿ zarchiwizowanych plikach nast¹pi³y zmiany. W przypadku gdy pliki siê zmieni³y, archiwum bêdzie aktualizowane. U¿ytkownik wówczas zostanie poinformowany, w jakich plikach nast¹pi³y zmiany. 
+
+Dystrybutor aplikacji bêdzie wyposa¿ony w dodatkowy program, który na podstawie ID generowaæ bêdzie klucz produktu.
+\section{Szczegó³owy opis}  
+Przy ka¿dym kolejnym uruchomieniu aplikacji weryfikowana bêdzie poprawnoœæ klucza produktu. W przypadku gdy klucz zgodny jest z ID, program zweryfikuje has³o dostêpu u¿ytkownika do archiwum. Nastêpnie na podstawie pliku zawieraj¹cego strukturê katalogów, u¿ytkownik bêdzie móg³ wybraæ plik i dokonaæ na nim zmian. Dodatkowo u¿ytkownik bêdzie móg³ zadaæ maksymalny rozmiar paczek zarchiwizowanych.
+\section{Schemat szyfrowania}
+\begin{center}
+\includegraphics[scale=.8]{schemat.JPG} 
+\end{center}
+Gdzie dok³adniej:
+\begin{itemize}
+\item $Key_1$=SHA1(Key)
+\item[] $Key_i$=SHA1($Key_{i-1}$), $i>1$
+\item $G_1$=MD5(IV, $Key_i$, counter)
+\item[] $G_i$=MD5($Cipherblock_{i-1}$, $Key_i$, counter), $i>1$
+\item $H_i$ = SHA256($Key_i$)
+\end{itemize}
+
+U¿ytkownik w czasie uruchomienia aplikacji podaje has³o g³ówne (Key). W przypadku pierwszego uruchomienia aplikacji, wartoœæ inicjuj¹ca IV jest losowana, w przeciwnym wypadku wartoœæ odczytywana jest z wczeœniej zapisanych plików. Nastêpnie pliki dzielone s¹ na paczki okreœlonej d³ugoœci, z których ka¿da jest XORowana z wartoœci¹ $G_i$ i szyfrowana w trybie blokowym z u¿yciem algorytmu AES. Przed zapisem do pliku blok szyfrogramu XORowany jest z funkcj¹ skrótu (SHA256) bie¿¹cego klucza. Kolejne wartoœci $G_i$ generowane s¹ jako skrót MD5 na podstawie bie¿¹cego klucza, tekstu szyfrogramu poprzedniej iteracji (w pierwszej iteracji wartoœci inicjuj¹cej IV) oraz G2.
+\section{Generowanie i weryfikacja klucza/licencji}
+Aplikacja generuje ID u¿ytkownika na podstawie jego sprzêtu, nastêpnie wysy³a go do dystrybutora. Dystrybutor przy u¿yciu aplikacji generuje klucz, który przesy³a u¿ytkownikowi.\\
+Klucz generowany jest jako funkcja skrótu adresu ID. Proces weryfikacji przez aplikacjê bêdzie przeprowadzony w analogiczny sposób, co w trakcie generowania.
+$$Key(ID,date)=SHA256(ID) + MD5(date)$$
+\section{Elementy opcjonalne}
+\begin{itemize}
+\item Instalator
+\item Projekt w wersji okienkowej
+\end{itemize}
+\section{Plan pracy}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|P{0.1 \textwidth}|P{0.9\textwidth}|}\hline
+\multicolumn{2}{|c|}{\textbf{Plan pracy}}\\\hline\hline
+\textbf{Zajêcia} & \textbf{Etap -- opis prac} \\\hline
+1 & Implementacja metody generuj¹cej ID u¿ytkownika, klucza produktu oraz weryfikuj¹cej poprawnoœæ klucza. \\\hline
+2 & Implementacja podzia³u plików na paczki i szyfrowania plików\\\hline
+3 & Implementacja metody szukaj¹cej zmian w plikach i zapisuj¹cej strukturê katalogu.\\\hline
+4 & Oddanie projektu\\\hline
+\end{tabular}
+
+\end{center}
+\end{document}
