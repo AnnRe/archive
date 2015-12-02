@@ -51,6 +51,9 @@
     <ClCompile Include="Crypto.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ArchiveLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ID.h">
@@ -79,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="Crypto.h">
       <Filter>Header Files\ciphers</Filter>
+    </ClInclude>
+    <ClInclude Include="ArchiveLoader.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

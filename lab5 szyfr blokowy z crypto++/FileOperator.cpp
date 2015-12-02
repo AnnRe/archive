@@ -1,7 +1,33 @@
 #include "FileOperator.h"
 #include <sstream>
+#include "ArchiveLoader.h"
 
 using namespace std;
+
+FileOperator::FileOperator(string dir)
+{
+	directory = dir;
+	GetFileStructure();
+	ListFileStructure();
+}
+FileOperator::FileOperator()
+{
+	directory = "";
+	if (FirstLogon())
+	{
+		GetConfiguration();
+		GetFileStructure();
+		ListFileStructure();
+		SaveFileStructure("structure.txt");
+		GetTotalLength();
+	}
+	else
+	{
+		LoadConfigurationAndStructure();
+		ListFileStructure();
+		GetTotalLength();
+	}
+}
 
 void FileOperator::LoadSizeStringSize()
 {
@@ -29,11 +55,11 @@ void FileOperator::GetTotalLength()
 	totalLength = 0;
 	for (int i = 0; i < fileNames.size(); i++)
 	{
-		cout << "+" << fileNames[i] << "(" << fileSizes[fileNames[i]] << ")\n";
+		//cout << "+" << fileNames[i] << "(" << fileSizes[fileNames[i]] << ")\n";
 		if (fileSizes[fileNames[i]]>0)
 			totalLength += fileSizes[fileNames[i]];
 	}
-	cout << "total length:" << totalLength << endl;
+	//cout << "total length:" << totalLength << endl;
 }
 
 void FileOperator::GetConfiguration()
@@ -46,34 +72,31 @@ void FileOperator::GetConfiguration()
 	os << bundleSize;
 }
 
-FileOperator::FileOperator()
-{
-	if (FirstLogon())
-	{
-		GetConfiguration();
-		GetFileStructure();
-		ListFileStructure();
-		SaveFileStructure("structure.txt");
-		GetTotalLength();
-	}
-	else
-	{
-		LoadConfigurationAndStructure();
-		ListFileStructure();
-		GetTotalLength();
-	}
-}
-
-
 void FileOperator::CreateArchiveDir()
 {
+	string archiveDir;
+	string dd = this->directory;
+	size_t poz = dd.find_last_of("\\");
+	archiveDir ="\""+ dd.substr(0, poz + 1);
+	archiveDir += "archive"; archiveDir += "\"";
 	cout << "Creating archive\n";
-	system("mkdir archive");
+	string command = "mkdir " + archiveDir;
+
+	system(command.c_str());
 }
 
 FileOperator::~FileOperator()
 {
 }
+std::string FileOperator::GetArchiveDir() const
+{
+	string dir;
+	size_t poz = this->directory.find_last_of("\\");
+	dir = "\"" + this->directory.substr(0, poz + 1);
+	dir += "archive"; dir += "\"";
+	return dir;
+}
+
 
 int FileOperator::NumberOfFiles()
 {

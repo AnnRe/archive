@@ -1,15 +1,20 @@
 #include "Decryptor.h"
 #include "Encryptor.h"
+#include "ArchiveLoader.h"
 
 Decryptor::Decryptor(FileOperator _fileOperator)
 {
-	fileOperator = _fileOperator;
-	numberOfFiles = GetNumberOfFiles();
+	ArchiveLoader archiveLoader(_fileOperator.directory);
 }
 
 
 Decryptor::~Decryptor()
 {
+}
+
+void Decryptor::LoadFileContent()
+{
+
 }
 
 void Decryptor::LoadConfiguration()
@@ -24,23 +29,18 @@ void Decryptor::LoadConfiguration()
 	//reading initialization string IV
 	std::string IV;
 	for (int i = 0; i < CryptoPP::AES::BLOCKSIZE; i++)
-		IV.push_back(file2.get());
-	iv = (unsigned)IV.c_str();
+		crypto.iv[i] = file2.get();
+		//IV.push_back(file2.get());
 	file2.close();
+
+	std::cout << "IV odtworzone:" << crypto.iv << std::endl;
+
 }
 
 void Decryptor::LoadEncryptedFile()//Joins all blocks to one
 {
 	std::string CipherText;
 
-	int numberOfFiles = GetNumberOfFiles();
-	for (int i = 0; i < numberOfFiles; i++)
-	{
-		///TODO
-	}
+	//TODO
 }
 
-int Decryptor::GetNumberOfFiles()
-{
-	return fileOperator.NumberOfFiles();
-}

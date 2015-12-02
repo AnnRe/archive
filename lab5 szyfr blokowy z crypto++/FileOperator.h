@@ -18,8 +18,10 @@ public:
 	void LoadConfigurationAndStructure();
 	void GetTotalLength();
 	void GetConfiguration();
+	FileOperator(std::string dir);
 	FileOperator();
 	~FileOperator();
+	//std::string GetArchiveDir();
 	std::vector<std::string> fileNames;
 	std::map<std::string, int> fileSizes;//w przypadku katalogow -1 tzn zapisana jego struktura -2 nie
 	std::map<std::string, std::string> fileTypes;
@@ -28,21 +30,20 @@ public:
 
 	int NumberOfFiles();
 	int BundleSize();
-
-	static void CreateArchiveDir();
+	std::string GetArchiveDir() const;
+	void CreateArchiveDir();
+	void GetFileStructure();
+	void ListFileStructure();
+	std::string directory;
 
 
 private:
-	std::string directory;
 	int numberOfDigits;
 	int bundleSize;
 
-
 	bool FirstLogon();
 	void GetPath();
-	void GetFileStructure();
 	void GetFileStructure(std::string path);
-	void ListFileStructure();
 	static int CountChars(std::string path);
 	void SaveFileStructure(std::string fileName);
 

@@ -1,5 +1,7 @@
 #pragma once
 #include <cryptlib.h>
+#include "Crypto.h"
+#include "ArchiveLoader.h"
 #include "FileOperator.h"
 
 class Decryptor
@@ -9,13 +11,17 @@ public:
 	~Decryptor();
 	void LoadConfiguration();
 	void LoadEncryptedFile();
+	void LoadFileContent();
+
 private:
 	byte iv;
 	int fileSize;
 	int numberOfDigits;
-	int numberOfFiles;
-	int GetNumberOfFiles();
-	FileOperator fileOperator;
+	
+	ArchiveLoader archiveLoader;
+
+	std::string archive_path;
+	Crypto crypto;
 
 };
 

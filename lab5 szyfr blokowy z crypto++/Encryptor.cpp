@@ -157,7 +157,8 @@ void Encryptor::SplitToFiles()
 	cout << "Splitting to files ... " << endl;
 	int bundleSize = fileOperator.BundleSize();
 	int bundleNumber = 1;
-	FileOperator::CreateArchiveDir();
+	fileOperator.CreateArchiveDir();
+	string archiveDir=fileOperator.GetArchiveDir();
 
 	for (int i = 0; i < cipherText.length(); i+=bundleSize)
 	{
@@ -165,7 +166,7 @@ void Encryptor::SplitToFiles()
 		for (int j = i; j < i+bundleSize; j++)
 			fileContent.push_back(cipherText[i*bundleSize + j]);
 
-		string fileName = "archive\\bundle";
+		string fileName = archiveDir+"\\bundle";
 		stringstream ss; ss << bundleNumber++; fileName += ss.str();
 		fileName += ".txt";
 		cout << fileName << endl;
