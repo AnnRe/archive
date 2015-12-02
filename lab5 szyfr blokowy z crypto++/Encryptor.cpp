@@ -2,30 +2,20 @@
 using namespace CryptoPP;
 using namespace std;
 
-void Encryptor::GetFirstG()
-{
-	cout << "---\nGetting first G \n---\n";
-	//G0
-	byte* licznik = nullptr;
-	md5.Update(iv, sizeof(iv));
-	/*cout << "sizeof licznik " << sizeof(licznik) << endl;
-	md5.Update(licznik, sizeof(licznik));*/
-	md5.Update(key, sizeof(key));
-	md5.TruncatedFinal(G, CIPHER::BLOCKSIZE);
-}
-
 void Encryptor::Run()
 {
 	// Cipher Text
 	string BlockCipherText;
 	string PreviousBlockCipherText;
 
-	GetFirstG();
+	//GetFirstG();
+	crypto.GetFirstG();
 
 	cout << "\n----\nSZYFROWANIE...\n";
 	for (int i = 0; i < PlainText.size(); i += CIPHER::BLOCKSIZE)//rozbicie na bloki
 	{
-		GetNextAESkey();
+		crypto.GetNextAESkey();
+
 		string BlockText;
 		BlockText = PlainText.substr(i, i + CIPHER::BLOCKSIZE);
 		while (BlockText.size() < CIPHER::BLOCKSIZE)
@@ -33,10 +23,10 @@ void Encryptor::Run()
 		cout << "===\n blok tekstu:" << BlockText << endl << "===\n";
 		// Encryptor
 		CIPHER_MODE<CIPHER>::Encryption
-			Encryptor(key, sizeof(key), iv);//CBC AES
+			Encryptor(crypto.key, sizeof(crypto.key), crypto.iv);//CBC AES
 
 		for (int j = 0; j < CIPHER::BLOCKSIZE; j++) //G xor textblock
-			BlockText[j] = (unsigned)BlockText[j] ^ G[j];
+			BlockText[j] = (unsigned)BlockText[j] ^ crypto.G[j];
 
 		// Encryption AES
 		StringSource(BlockText, true,
@@ -48,61 +38,33 @@ void Encryptor::Run()
 
 		PreviousBlockCipherText = BlockCipherText;
 
-		GetNextH();
+		crypto.GetNextH();
 
 		//H1 xor AES output
 		for (int j = 0; j < BlockCipherText.length(); j++)
 		{
-			unsigned char c = BlockCipherText[j] ^ H[j];
+			unsigned char c = BlockCipherText[j] ^ crypto.H[j];
 			BlockCipherText[j] = c;
 		}
-		//file << BlockCipherText;
 		cipherText += BlockCipherText;
 		//Gi+1=MD5( output z AES, key, licznik);
-		GetNextG(PreviousBlockCipherText);
+		crypto.GetNextG(PreviousBlockCipherText);
 
 	}
 	cout << "----\nKoniec szyfrowania...\n";
 
 }
 
-void Encryptor::GetNextAESkey()
-{
-	cout << "---\nGetting next AES key \n---\n";
-
-	SHA().CalculateDigest(key, key, sizeof(key));//generowanie i=tego klucza  //TODO:w³¹czyæ wszystkie 3 funkcje haszuj¹ce
-
-}
-
-void Encryptor::GetNextH()
-{
-	cout << "---\nGetting next H \n---\n";
-	SHA256().CalculateDigest(H, key, sizeof(key));
-}
-
-void Encryptor::GetNextG(string _PreviousCipherText)
-{
-	cout << "---\nGetting next G \n---\n";
-	md5.Update((byte*)_PreviousCipherText.c_str(), sizeof(_PreviousCipherText));
-	//md5.Update(licznik, sizeof(licznik));
-	md5.Update(key, sizeof(key));
-	md5.TruncatedFinal(G, CIPHER::BLOCKSIZE);
-}
 void Encryptor::Initialize()
 {
-	cout << "-----\n Initializing ...." << endl;
-	// Key and IV setup
-	memset(iv, 0x01, CIPHER::BLOCKSIZE);
-	prng.GenerateBlock(iv, sizeof(iv));
-	prng.GenerateBlock(key, sizeof(iv));//TODO:zamieniæ na has³o u¿ytkownika
-	cout << "IV:" << iv << endl;
+	crypto.Initialize();
 
 	string sizeString = int_to_string(PlainText.length(), numberOfDigits);
 
 	cipherText = sizeString;
 	// Configuration to ciphertext
 	stringstream ss;
-	ss << iv;
+	ss << crypto.iv;
 	cipherText+= ss.str();
 }
 

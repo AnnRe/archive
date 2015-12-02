@@ -17,6 +17,7 @@
 #include "filters.h" // StringSource and
 #include "integer.h"
 #include "FileOperator.h"
+#include "Crypto.h"
 // StreamTransformation
 
 // Cipher Modes
@@ -24,8 +25,6 @@
 
 // Ciphers
 #define CIPHER AES
-
-
 
 class Encryptor
 {
@@ -43,21 +42,12 @@ private:
 	std::string PlainText;
 
 	CryptoPP::AutoSeededRandomPool prng;
-	byte key[CryptoPP::AES::DEFAULT_KEYLENGTH];
-	byte iv[CryptoPP::AES::BLOCKSIZE];
-
-	byte G[CryptoPP::MD5::DIGESTSIZE];
-	byte H[CryptoPP::SHA256::DIGESTSIZE];
-
-	CryptoPP::MD5 md5;
-
-	void GetFirstG();
+	
 	void Run();
-	void GetNextAESkey();
-	void GetNextH();
-	void GetNextG(std::string _previousCipherText);
 	void Initialize();
 
 	std::vector<std::string> modifiedFiles;
+
+	Crypto crypto;
 };
 
