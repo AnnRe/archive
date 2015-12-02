@@ -92,8 +92,8 @@ std::string FileOperator::GetArchiveDir() const
 {
 	string dir;
 	size_t poz = this->directory.find_last_of("\\");
-	dir = "\"" + this->directory.substr(0, poz + 1);
-	dir += "archive"; dir += "\"";
+	dir = this->directory.substr(0, poz + 1);
+	dir += "archive"; 
 	return dir;
 }
 
