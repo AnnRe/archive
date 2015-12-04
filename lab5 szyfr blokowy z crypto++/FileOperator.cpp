@@ -8,7 +8,7 @@ FileOperator::FileOperator(string dir)
 {
 	directory = dir;
 	GetFileStructure();
-	ListFileStructure();
+	//ListFileStructure();
 }
 FileOperator::FileOperator()
 {
@@ -17,19 +17,19 @@ FileOperator::FileOperator()
 	{
 		GetConfiguration();
 		GetFileStructure();
-		ListFileStructure();
+		//ListFileStructure();
 		SaveFileStructure("structure.txt");
 		GetTotalLength();
 	}
 	else
 	{
 		LoadConfigurationAndStructure();
-		ListFileStructure();
+		//ListFileStructure();
 		GetTotalLength();
 	}
 }
 
-void FileOperator::LoadSizeStringSize()
+void FileOperator::LoadSizeStringSize()//druga linia pliku appConfig
 {
 	ifstream is("app.config");
 	string line;
@@ -79,7 +79,7 @@ void FileOperator::CreateArchiveDir()
 	size_t poz = dd.find_last_of("\\");
 	archiveDir ="\""+ dd.substr(0, poz + 1);
 	archiveDir += "archive"; archiveDir += "\"";
-	cout << "Creating archive\n";
+	//cout << "Creating archive\n";
 	string command = "mkdir " + archiveDir;
 
 	system(command.c_str());

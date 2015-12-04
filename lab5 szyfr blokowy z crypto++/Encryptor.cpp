@@ -1,4 +1,5 @@
 #include "Encryptor.h"
+#include <hex.h>
 using namespace CryptoPP;
 using namespace std;
 
@@ -11,30 +12,32 @@ void Encryptor::Run()
 	//GetFirstG();
 	crypto.GetFirstG();
 
-	cout << "\n----\nSZYFROWANIE...\n";
-	for (int i = 0; i < PlainText.size(); i += CIPHER::BLOCKSIZE)//rozbicie na bloki
+	cout << "----SZYFROWANIE...\n";
+	for (int i = 0; i < PlainText.size(); i += AES::BLOCKSIZE)//rozbicie na bloki
 	{
 		crypto.GetNextAESkey();
 
 		string BlockText;
-		BlockText = PlainText.substr(i, i + CIPHER::BLOCKSIZE);
-		while (BlockText.size() < CIPHER::BLOCKSIZE)
+		BlockText = PlainText.substr(i, i + AES::BLOCKSIZE);
+		while (BlockText.size() < AES::BLOCKSIZE)
 			BlockText.push_back('x');
-		cout << "===\n blok tekstu:" << BlockText << endl << "===\n";
+		//cout << "===\n blok tekstu:" << BlockText << endl << "===\n";
 		// Encryptor
-		CIPHER_MODE<CIPHER>::Encryption
+		CBC_Mode<AES>::Encryption
 			Encryptor(crypto.key, sizeof(crypto.key), crypto.iv);//CBC AES
 
-		for (int j = 0; j < CIPHER::BLOCKSIZE; j++) //G xor textblock
+		for (int j = 0; j < AES::BLOCKSIZE; j++) //G xor textblock
 			BlockText[j] = (unsigned)BlockText[j] ^ crypto.G[j];
 
 		// Encryption AES
-		StringSource(BlockText, true,
+		StringSource(BlockText.c_str(), true,
+			new HexEncoder(
 			new StreamTransformationFilter(Encryptor,
 			new StringSink(BlockCipherText)
+			) // HexEncoder
 			) // StreamTransformationFilter
 			); // StringSource
-		cout << "po AES:\n" << BlockCipherText << endl;
+		//cout << "po AES:\n" << BlockCipherText << endl;
 
 		PreviousBlockCipherText = BlockCipherText;
 
@@ -51,7 +54,7 @@ void Encryptor::Run()
 		crypto.GetNextG(PreviousBlockCipherText);
 
 	}
-	cout << "----\nKoniec szyfrowania...\n";
+	cout << "----Koniec szyfrowania...\n";
 
 }
 
@@ -83,46 +86,8 @@ Encryptor::Encryptor(int totalLength, FileOperator _fileOperator)
 		// Message M
 		PlainText = "Ala ma kota, a kot ma Alê.";
 		Initialize();
-
 		Run();
-
-		///////////////////////////////////////
 		
-		// Recovered Text 
-		string RecoveredText;
-
-		// Decryptor
-		/*CIPHER_MODE<CIPHER>::Decryption
-		Decryptor(key, sizeof(key), iv);
-
-		// Decryption
-		StringSource(CipherText, true,
-		new StreamTransformationFilter(Decryptor,
-		new StringSink(RecoveredText)
-		) // StreamTransformationFilter
-		); // StringSource
-
-		//////////////////////////////////////////
-		// Output //
-		//////////////////////////////////////////
-
-		cout << "Algorithm:" << endl;
-		cout << " " << Encryptor.AlgorithmName() << endl;
-		cout << "Minimum Key Size:" << endl;
-		cout << " " << Encryptor.MinKeyLength() << " bytes" << endl;
-		cout << endl;
-
-		cout << "Plain Text (" << PlainText.length() << " bytes)" << endl;
-		cout << " '" << PlainText << "'" << endl;
-		cout << endl;
-
-		cout << "Cipher Text Size:" << endl;
-		cout << " " << CipherText.size() << " bytes" << endl;
-		cout << endl;
-
-		cout << "Recovered Text:" << endl;
-		cout << " '" << RecoveredText << "'" << endl;
-		cout << endl;*/
 	}
 	catch (Exception& e)
 	{
@@ -151,6 +116,8 @@ string Encryptor::int_to_string(int value, int length)
 void Encryptor::SplitToFiles()
 {
 	cout << "Splitting to files ... " << endl;
+	
+	cout << "Cipher text (encryptor):" << cipherText<<endl;
 	int bundleSize = fileOperator.BundleSize();
 	int bundleNumber = 1;
 	fileOperator.CreateArchiveDir();
@@ -158,14 +125,13 @@ void Encryptor::SplitToFiles()
 
 	for (int i = 0; i < cipherText.length(); i+=bundleSize)
 	{
-		string fileContent;
+		string fileContent="";
 		for (int j = i; j < i+bundleSize; j++)
-			fileContent.push_back(cipherText[i*bundleSize + j]);
+			fileContent.push_back(cipherText[j]);
 
 		string fileName = archiveDir+"\\bundle";
 		stringstream ss; ss << bundleNumber++; fileName += ss.str();
 		fileName += ".txt";
-		cout << fileName << endl;
 
 		ofstream os(fileName);
 		os << fileContent;
@@ -179,4 +145,3 @@ void Encryptor::SplitToFiles()
 //TODO:
 // poprawiæ hashe
 // deszyfrowanie
-// po szyfrowaniu podzia³ na pliki

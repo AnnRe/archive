@@ -145,7 +145,10 @@ int main(int argc, char* argv[]) {
 		
 		
 	}
+	string text = "Ania nania";
+	cout << text.substr(4)<<endl;
 	system("PAUSE");
+
 	return 0;
 }
 //*/

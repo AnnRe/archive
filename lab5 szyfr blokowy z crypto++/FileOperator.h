@@ -35,10 +35,10 @@ public:
 	void GetFileStructure();
 	void ListFileStructure();
 	std::string directory;
+	int numberOfDigits;
 
 
 private:
-	int numberOfDigits;
 	int bundleSize;
 
 	bool FirstLogon();

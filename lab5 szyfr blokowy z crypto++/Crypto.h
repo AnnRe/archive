@@ -25,7 +25,6 @@ public:
 
 private:
 	CryptoPP::AutoSeededRandomPool prng;
-
 	CryptoPP::MD5 md5;
 
 

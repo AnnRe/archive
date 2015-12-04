@@ -7,14 +7,13 @@ FileEncrypter::FileEncrypter()
 {
 	Encryptor encryptor(fileOperator.totalLength,fileOperator);
 	encryptor.SplitToFiles();
-	encryptor.PrintModifiedFiles();
+	//encryptor.PrintModifiedFiles();
 	Decryptor decryptor(fileOperator);
-	decryptor.LoadConfiguration();
-
-	/*for (int i = 0; i < fileOperator.fileNames.size(); i++)
+	decryptor.Run();
+	/*for (int i = 0; i < archiveFileOperator.fileNames.size(); i++)
 	{
-		std::string name = fileOperator.fileNames[i];
-		if (fileOperator.fileTypes[name] == "DT_REG")
+		std::string name = archiveFileOperator.fileNames[i];
+		if (archiveFileOperator.fileTypes[name] == "DT_REG")
 		{
 			std::cout << "Szyfrowanie " << name << std::endl;
 		}

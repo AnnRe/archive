@@ -9,19 +9,21 @@ class Decryptor
 public:
 	Decryptor(FileOperator _fileOperator);
 	~Decryptor();
-	void LoadConfiguration();
-	void LoadEncryptedFile();
-	void LoadFileContent();
-
+	void Decrypt();
+	void Run();
+	
 private:
-	byte iv;
 	int fileSize;
-	int numberOfDigits;
 	
 	ArchiveLoader archiveLoader;
 	FileOperator dataFileOperator;
 	std::string archive_path;
 	Crypto crypto;
+	std::string cipherText;
+
+	void LoadConfiguration();
+	void LoadEncryptedFile();
+
 
 };
 

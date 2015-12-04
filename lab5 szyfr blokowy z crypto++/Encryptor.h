@@ -21,10 +21,10 @@
 // StreamTransformation
 
 // Cipher Modes
-#define CIPHER_MODE CBC_Mode
+//#define CIPHER_MODE CBC_Mode
 
 // Ciphers
-#define CIPHER AES
+//#define CIPHER AES
 
 class Encryptor
 {

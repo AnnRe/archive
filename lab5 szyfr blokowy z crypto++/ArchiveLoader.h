@@ -10,9 +10,11 @@ public:
 	std::string FileContent(std::string file_name);
 	std::string GetFilesContent(int number_of_files);
 	std::string archiveDir;
+	int GetNumberOfFiles();
+
 
 private:
-	FileOperator fileOperator;
+	FileOperator archiveFileOperator;
 	void GetArchiveDir(std::string dir);
 };
 

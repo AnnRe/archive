@@ -9,7 +9,7 @@ ArchiveLoader::ArchiveLoader(std::string dir)
 {
 	GetArchiveDir(dir);
 	FileOperator fop(archiveDir);
-	fileOperator = fop;
+	archiveFileOperator = fop;
 }
 
 
@@ -22,7 +22,7 @@ std::string ArchiveLoader::GetFilesContent(int number_of_files)
 	{
 		std::ostringstream oss; oss << i;
 
-		std::string fileName = archiveDir + "\\bundle"+oss.str();
+		std::string fileName = archiveDir + "\\bundle"+oss.str()+".txt";
 		content += FileContent(fileName);
 	}
 	return content;
@@ -55,7 +55,7 @@ void ArchiveLoader::GetArchiveDir(std::string dir)
 	
 }
 
-std::string GetContent()
+int ArchiveLoader::GetNumberOfFiles()
 {
-
+	return archiveFileOperator.NumberOfFiles();
 }
