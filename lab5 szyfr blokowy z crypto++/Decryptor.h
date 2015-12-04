@@ -19,7 +19,7 @@ private:
 	int numberOfDigits;
 	
 	ArchiveLoader archiveLoader;
-
+	FileOperator dataFileOperator;
 	std::string archive_path;
 	Crypto crypto;
 

@@ -10,15 +10,41 @@ ArchiveLoader::ArchiveLoader(std::string dir)
 	GetArchiveDir(dir);
 	FileOperator fop(archiveDir);
 	fileOperator = fop;
-
-	fileOperator.GetFileStructure();
-	fileOperator.ListFileStructure();
-
 }
 
 
+std::string ArchiveLoader::GetFilesContent(int number_of_files)
+{
+	std::cout << "loading " << number_of_files << " files...\n";
+	std::string content = "";
+
+	for (int i = 1; i < number_of_files+1; i++)
+	{
+		std::ostringstream oss; oss << i;
+
+		std::string fileName = archiveDir + "\\bundle"+oss.str();
+		content += FileContent(fileName);
+	}
+	return content;
+}
+
 ArchiveLoader::~ArchiveLoader()
 {
+}
+
+std::string ArchiveLoader::FileContent(std::string file_name)
+{
+	std::ifstream file(file_name);
+	std::string fileContent = "";
+	while (!file.eof())
+	{
+		std::string line;
+		getline(file,line);
+		fileContent += line;
+	}
+	file.close();
+	return fileContent;
+
 }
 
 void ArchiveLoader::GetArchiveDir(std::string dir)
@@ -26,7 +52,7 @@ void ArchiveLoader::GetArchiveDir(std::string dir)
 	size_t poz = dir.find_last_of("\\");
 	archiveDir = dir.substr(0,poz+1);
 	archiveDir += "archive";
-	std::cout << "Archive dir:" << archiveDir << std::endl;
+	
 }
 
 std::string GetContent()

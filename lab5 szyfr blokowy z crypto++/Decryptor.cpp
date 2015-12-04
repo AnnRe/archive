@@ -4,7 +4,9 @@
 
 Decryptor::Decryptor(FileOperator _fileOperator)
 {
-	ArchiveLoader archiveLoader(_fileOperator.directory);
+	ArchiveLoader _archiveLoader(_fileOperator.directory);
+	archiveLoader = _archiveLoader;
+	dataFileOperator = _fileOperator;
 }
 
 
@@ -19,22 +21,25 @@ void Decryptor::LoadFileContent()
 
 void Decryptor::LoadConfiguration()
 {
-	std::ifstream file2("output.txt");
-	std::string len;
-	for (int i = 0; i < numberOfDigits;i++)
-		len += file2.get();
+	std::string dir=archiveLoader.archiveDir;
+	std::string filesContent;
+	
+	int numberOfFiles = (CryptoPP::AES::BLOCKSIZE + numberOfDigits) / dataFileOperator.BundleSize();
+	std::cout << "!!" << std::endl;
+	std::cout << CryptoPP::AES::BLOCKSIZE << "; " << numberOfDigits << "; " << dataFileOperator.BundleSize() << std::endl;
+	filesContent = archiveLoader.GetFilesContent(numberOfFiles);
+
+	std::string len=filesContent.substr(numberOfDigits);
 	std::istringstream iss(len);
 	int dl; iss >> dl;
 
 	//reading initialization string IV
 	std::string IV;
-	for (int i = 0; i < CryptoPP::AES::BLOCKSIZE; i++)
-		crypto.iv[i] = file2.get();
-		//IV.push_back(file2.get());
-	file2.close();
+	for (int i = numberOfDigits; i < numberOfDigits+CryptoPP::AES::BLOCKSIZE; i++)
+		crypto.iv[i] = filesContent[i];
+	//IV.push_back(file2.get());
 
 	std::cout << "IV odtworzone:" << crypto.iv << std::endl;
-
 }
 
 void Decryptor::LoadEncryptedFile()//Joins all blocks to one

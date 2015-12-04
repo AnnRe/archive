@@ -149,7 +149,7 @@ void FileOperator::GetFileStructure()
 			int chars_n = CountChars(path);
 			//cout <<"plik: "<< name << ", " << /*(unsigned int)file_stats.st_size*/chars_n << endl;
 			fileSizes[dirp->d_name] = chars_n;
-			cout << "\t ***"<<chars_n << endl;
+			//cout << "\t ***"<<chars_n << endl;
 			fileTypes[dirp->d_name] = "DT_REG";//regular file
 		}
 		else if (dirp->d_type == DT_DIR )
@@ -277,7 +277,6 @@ void FileOperator::GetBundleSize()
 
 void FileOperator::LoadPath()
 {
-	
 	try
 	{
 		ifstream is("app.config");

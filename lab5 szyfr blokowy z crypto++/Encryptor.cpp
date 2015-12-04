@@ -134,13 +134,9 @@ Encryptor::Encryptor(int totalLength, FileOperator _fileOperator)
 	}
 }
 
-
 Encryptor::~Encryptor()
 {
 }
-
-
-
 
 string Encryptor::int_to_string(int value, int length)
 {

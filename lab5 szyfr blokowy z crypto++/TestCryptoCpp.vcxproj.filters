@@ -84,7 +84,7 @@
       <Filter>Header Files\ciphers</Filter>
     </ClInclude>
     <ClInclude Include="ArchiveLoader.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
