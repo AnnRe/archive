@@ -35,15 +35,9 @@ ArchiveLoader::~ArchiveLoader()
 std::string ArchiveLoader::FileContent(std::string file_name)
 {
 	std::ifstream file(file_name);
-	std::string fileContent = "";
-	while (!file.eof())
-	{
-		std::string line;
-		getline(file,line);
-		fileContent += line;
-	}
-	file.close();
-	return fileContent;
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	return buffer.str();
 
 }
 

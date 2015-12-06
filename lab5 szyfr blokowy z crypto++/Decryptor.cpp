@@ -1,6 +1,6 @@
 #include "Decryptor.h"
 #include "ArchiveLoader.h"
-#include <modes.h>
+//#include <modes.h>
 #include <hex.h>
 #include<sstream>
 
@@ -18,15 +18,14 @@ Decryptor::~Decryptor()
 
 void Decryptor::Decrypt()//TODO:key!
 {
+	byte previousEncryptedTextBlock[AES::BLOCKSIZE];
 	crypto.GetFirstG();
+	std::string decryptedText = "";
 	std::cout << "----DESZYFROWANIE...\n";
 	std::cout << "len:" << cipherText.length();
 	//int blockSize = AES::BLOCKSIZE;
 	for (int i = 0; i < cipherText.length(); i += AES::BLOCKSIZE)
 	{
-		std::string previousRecoveredText;
-		std::string PlainText;
-
 		crypto.GetNextAESkey();
 		crypto.GetNextH();
 		//Decryptor
@@ -34,20 +33,7 @@ void Decryptor::Decrypt()//TODO:key!
 		StringSource ss("28292A2B2D2E2F30323334353738393A3C3D3E3F41424344464748494B4C4D4E", true,
 			new HexDecoder(
 			new StringSink(key)));
-		/*****
-		CryptoPP::CTR_Mode<CryptoPP::AES>::Decryption
-			decryptor(crypto.key, sizeof(crypto.key), crypto.iv);******/
-		/*****std::string EncryptedBlockText = "";
-		for (int j = i; j < i + 32; j++)
-		{
-			EncryptedBlockText.push_back(cipherText[j]);
-		}
-		std::cout << "++++++++\nBlock:" << EncryptedBlockText << "(len=" << EncryptedBlockText.length() << ")" << std::endl;*****/
-		/*while (EncryptedBlockText.size() < AES::BLOCKSIZE)
-			EncryptedBlockText.push_back('x');*/
-
-		/****for (int j = 0; j < EncryptedBlockText.length(); j++) //H xor textblock
-			EncryptedBlockText[j] = (unsigned)EncryptedBlockText[j] ^ crypto.H[j];*****/
+		
 		/****previousRecoveredText = EncryptedBlockText;
 		byte previousG[16]; for (int k = 0; k < 16; k++) previousG[k] = crypto.G[k];
 
@@ -68,24 +54,22 @@ void Decryptor::Decrypt()//TODO:key!
 			/****for (int j = 0; j < 16; j++)
 				RecoveredText[j] ^= previousG[j];***/
 		
-
-		byte input[AES::BLOCKSIZE]; byte plain[AES::BLOCKSIZE];
+		byte encryptedTextBlock[AES::BLOCKSIZE]; byte decryptedTextBlock[AES::BLOCKSIZE];
+		
 		for (int l = i; l < i+AES::BLOCKSIZE; l++)
-			input[l%AES::BLOCKSIZE] = cipherText[l];
+			encryptedTextBlock[l%AES::BLOCKSIZE] = cipherText[l];
+		
+		for (int j = 0; j < AES::BLOCKSIZE; j++) //H xor textblock
+		{
+			encryptedTextBlock[j] = (unsigned)encryptedTextBlock[j] ^ crypto.H[j];
+			previousEncryptedTextBlock[j] = encryptedTextBlock[j];
+		}
 
 		AES::Decryption alg2;
 		alg2.SetKey((byte*)key.c_str(), 32);
-		alg2.ProcessBlock(input, plain);
-
-		/*for (int l = 0; l < AES::BLOCKSIZE; l++)
-			std::cout << std::hex << (int)plain[l] << " ";*/
-		std::cout << plain << std::endl;
-
-
-
-
-			/*****PlainText += RecoveredText;
-			std::cout << "\tkey:" << crypto.key << std::endl;
+		alg2.ProcessBlock(encryptedTextBlock, decryptedTextBlock);
+			
+			/*std::cout << "\tkey:" << crypto.key << std::endl;
 			std::cout << "recovered:" << RecoveredText << std::endl;*****/
 
 		/*****}
@@ -100,7 +84,10 @@ void Decryptor::Decrypt()//TODO:key!
 		}****/
 
 		/**** crypto.GetNextG(previousRecoveredText); ****/
+		for (int k = 0; k < AES::BLOCKSIZE; k++)
+			decryptedText.push_back(decryptedTextBlock[k]);
 	}
+	std::cout << decryptedText << std::endl;
 	/*****std::cout << cipherText << std::endl;****/
 }
 
@@ -118,8 +105,8 @@ void Decryptor::LoadConfiguration()
 	std::string filesContent;
 	int digits = dataFileOperator.numberOfDigits;
 	
-	int numberOfFiles = (CryptoPP::AES::BLOCKSIZE + digits) / dataFileOperator.BundleSize()+1;
-	std::cout << "blocksize:"<<CryptoPP::AES::BLOCKSIZE << "; " << "digits:"<<digits << "; " << "bundlesize:"<<dataFileOperator.BundleSize() << std::endl;
+	int numberOfFiles = (AES::BLOCKSIZE + digits) / dataFileOperator.BundleSize()+1;
+	std::cout << "blocksize:"<<AES::BLOCKSIZE << "; " << "digits:"<<digits << "; " << "bundlesize:"<<dataFileOperator.BundleSize() << std::endl;
 	filesContent = archiveLoader.GetFilesContent(numberOfFiles);
 
 	std::cout << "loaded ciphertext:" << filesContent << std::endl;

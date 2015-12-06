@@ -43,8 +43,7 @@ void Encryptor::Run()
 		HexEncoder enc; enc.Put((byte*)tmp.data(), tmp.length());
 		enc.MessageEnd(); enc.Get(blockText,AES::BLOCKSIZE);*/
 		/****cout << "===\n blok tekstu:" << BlockText << endl << "===("<<BlockText.length()<<")\n";*****/
-		cout << "===\n blok tekstu:" << blockText << endl << "===("<<sizeof blockText<<")\n";
-
+		
 		string key;
 		StringSource ss("28292A2B2D2E2F30323334353738393A3C3D3E3F41424344464748494B4C4D4E", true,
 			new HexDecoder(
@@ -52,42 +51,25 @@ void Encryptor::Run()
 
 		byte cipherData[AES::BLOCKSIZE];
 
-		cout << "plain:\n" << blockText << endl;
-
+		//AES Encryption
 		AES::Encryption alg1;
 		alg1.SetKey((byte*)key.c_str(), 32);
 		alg1.ProcessBlock(blockText, cipherData);
 		// Encryptor
-		cout << "cipher:\n" << cipherData << endl;
-
-		/*CTR_Mode<AES>::Encryption
-			Encryptor(crypto.key, sizeof(crypto.key), crypto.iv);//CTR AES*/
+		
 		/****for (int j = 0; j < AES::BLOCKSIZE; j++) //G xor textblock
 			BlockText[j] = (unsigned)BlockText[j] ^ crypto.G[j];****/
-
-		// Encryption AES
-		/****StringSource(BlockText, true,
-			new HexEncoder(
-			new StreamTransformationFilter(Encryptor,
-			new StringSink(BlockCipherText),
-			BlockPaddingSchemeDef::NO_PADDING
-			) // HexEncoder
-			) // StreamTransformationFilter
-			); // StringSource*/
-		
-		/*****cout << "\tAES key:" << crypto.key << endl;
-		cout << "po AES:\n" << BlockCipherText << "\n("<<BlockCipherText.length()<<")"<<endl;*****/
 
 		PreviousBlockCipherText = BlockCipherText;
 
 		crypto.GetNextH();
 
 		//H1 xor AES output
-		/****for (int j = 0; j < BlockCipherText.length(); j++)
+		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
-			unsigned char c = BlockCipherText[j] ^ crypto.H[j];
-			BlockCipherText[j] = c;
-		}****/
+			unsigned char c = cipherData[j] ^ crypto.H[j];
+			cipherData[j] = c;
+		}
 		/****cout << "out:" << BlockCipherText.length() << endl;
 		cipherText += BlockCipherText;*****/
 		//Gi+1=MD5( output z AES, key, licznik);
@@ -100,7 +82,6 @@ void Encryptor::Run()
 			cipherText.push_back(cipherData[j]);
 
 	}
-	cout << cipherText << endl;
 	cout << "----Koniec szyfrowania...\n";
 
 }
