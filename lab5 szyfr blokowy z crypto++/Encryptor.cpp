@@ -42,7 +42,6 @@ void Encryptor::Run()
 			blockText[j] += crypto.G[j];
 		}
 
-
 		byte cipherData[AES::BLOCKSIZE];
 
 		//AES Encryption
@@ -53,7 +52,8 @@ void Encryptor::Run()
 		
 		for (int k = 0; k < AES::BLOCKSIZE; k++)
 			previousCipherData[k] = cipherData[k];
-
+		//g1
+		crypto.GetNextG(previousCipherData);
 		std::cout << "plain:";
 		for (int k = 0; k < AES::BLOCKSIZE; k++)
 			std::cout << blockText[k];

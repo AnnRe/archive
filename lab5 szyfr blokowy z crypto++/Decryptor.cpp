@@ -46,6 +46,8 @@ void Decryptor::Decrypt()//TODO:key!
 			encryptedTextBlock[j] -= crypto.H[j];
 			previousEncryptedTextBlock[j] = encryptedTextBlock[j];
 		}
+		//g1
+		crypto.GetNextG(previousEncryptedTextBlock);
 		// Decryption AES
 		AES::Decryption alg2;
 		alg2.SetKey((byte*)key.c_str(), 32);
@@ -54,7 +56,7 @@ void Decryptor::Decrypt()//TODO:key!
 		//block ^G
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
-			decryptedTextBlock[j] -=crypto.G[j];
+			decryptedTextBlock[j] -=crypto.Gprevious[j];
 		}
 			
 			/*std::cout << "\tkey:" << crypto.key << std::endl;
