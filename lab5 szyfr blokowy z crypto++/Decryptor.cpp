@@ -34,14 +34,6 @@ void Decryptor::Decrypt()//TODO:key!
 			new HexDecoder(
 			new StringSink(key)));
 		
-		/****previousRecoveredText = EncryptedBlockText;
-		byte previousG[16]; for (int k = 0; k < 16; k++) previousG[k] = crypto.G[k];
-
-		crypto.GetNextG(previousRecoveredText);
-
-			/****for (int j = 0; j < 16; j++)
-				RecoveredText[j] ^= previousG[j];***/
-		
 		byte encryptedTextBlock[AES::BLOCKSIZE]; byte decryptedTextBlock[AES::BLOCKSIZE];
 		
 		for (int l = i; l < i+AES::BLOCKSIZE; l++)
@@ -58,29 +50,25 @@ void Decryptor::Decrypt()//TODO:key!
 		AES::Decryption alg2;
 		alg2.SetKey((byte*)key.c_str(), 32);
 		alg2.ProcessBlock(encryptedTextBlock, decryptedTextBlock);
+
+		//block ^G
+		for (int j = 0; j < AES::BLOCKSIZE; j++)
+		{
+			decryptedTextBlock[j] -=crypto.G[j];
+		}
 			
 			/*std::cout << "\tkey:" << crypto.key << std::endl;
 			std::cout << "recovered:" << RecoveredText << std::endl;*****/
 
 		/*****}
 		catch (Exception &e)		{			std::cout << e.what() << std::endl;		}****/
-		/*****previousRecoveredText = RecoveredText;*/
 		crypto.GetNextH();
 
-		/****for (int j = 0; j < EncryptedBlockText.length(); j++)
-		{
-			unsigned char c = EncryptedBlockText[j] ^ crypto.H[j];
-			EncryptedBlockText[j] = c;
-		}****/
-
-		/**** crypto.GetNextG(previousRecoveredText); ****/
 		for (int k = 0; k < AES::BLOCKSIZE; k++)
 			decryptedText.push_back(decryptedTextBlock[k]);
 	}
-	
 	std::cout << "cipher:"<<cipherText << std::endl;
 	std::cout << "text:"<<decryptedText << std::endl;
-	/*****std::cout << cipherText << std::endl;****/
 }
 
 void Decryptor::Run()

@@ -12,7 +12,7 @@ void Encryptor::Run()
 	for (int i = 0; i < PlainText.size(); i+=AES::BLOCKSIZE)//rozbicie na bloki
 	{
 		string BlockCipherText;
-		string PreviousBlockCipherText;
+		byte previousCipherData[AES::BLOCKSIZE];
 
 		crypto.GetNextAESkey();
 		
@@ -36,6 +36,12 @@ void Encryptor::Run()
 		StringSource ss("28292A2B2D2E2F30323334353738393A3C3D3E3F41424344464748494B4C4D4E", true,
 			new HexDecoder(
 			new StringSink(key)));
+		//block ^G
+		for (int j = 0; j < AES::BLOCKSIZE; j++)
+		{
+			blockText[j] += crypto.G[j];
+		}
+
 
 		byte cipherData[AES::BLOCKSIZE];
 
@@ -45,30 +51,19 @@ void Encryptor::Run()
 		alg1.ProcessBlock(blockText, cipherData);
 		// Encryptor
 		
-		/****for (int j = 0; j < AES::BLOCKSIZE; j++) //G xor textblock
-			BlockText[j] = (unsigned)BlockText[j] ^ crypto.G[j];****/
+		for (int k = 0; k < AES::BLOCKSIZE; k++)
+			previousCipherData[k] = cipherData[k];
 
-		PreviousBlockCipherText = BlockCipherText;
 		std::cout << "plain:";
 		for (int k = 0; k < AES::BLOCKSIZE; k++)
 			std::cout << blockText[k];
 		crypto.GetNextH();
-		std::cout <<std::endl<< "^H:"/*<<crypto.H*/ << std::endl;
-		std::cout << "before:";
-		for (int k = 0; k < AES::BLOCKSIZE; k++)
-			std::cout << cipherData[k];
-		std::cout <<std::endl<< "After:";
 		//H1 xor AES output
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
 			cipherData[j] +=crypto.H[j];
-			std::cout << cipherData[j];
 		}
 		std::cout << std::endl;
-		/****cout << "out:" << BlockCipherText.length() << endl;
-		cipherText += BlockCipherText;*****/
-		//Gi+1=MD5( output z AES, key, licznik);
-		crypto.GetNextG(PreviousBlockCipherText);
 
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 			cipherText.push_back(cipherData[j]);

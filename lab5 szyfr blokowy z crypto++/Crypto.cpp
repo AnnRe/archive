@@ -33,9 +33,14 @@ void Crypto::GetNextH()
 	//std::cout << "---Getting next H ---\n";
 	CryptoPP::SHA256().CalculateDigest(H, key, sizeof(key));
 }
-void Crypto::GetNextG(std::string _previousCipherText)
+void Crypto::GetNextG(byte prev[])
 {
+	std::string _previousCipherText = "";
+	for (int i = 0; i < CryptoPP::AES::BLOCKSIZE; i++)
+		_previousCipherText.push_back(prev[i]);
 	//std::cout << "---Getting next G ---\n";
+	for (int i = 0; i < CryptoPP::MD5::DIGESTSIZE; i++)
+		Gprevious[i] = G[i];
 	md5.Update((byte*)_previousCipherText.c_str(), sizeof(_previousCipherText));
 	//md5.Update(licznik, sizeof(licznik));
 	md5.Update(key, sizeof(key));

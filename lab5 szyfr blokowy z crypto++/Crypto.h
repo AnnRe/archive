@@ -14,7 +14,7 @@ public:
 	void GetFirstG();
 	void GetNextAESkey();
 	void GetNextH();
-	void GetNextG(std::string _previousCipherText);
+	void GetNextG(byte prev[]);
 
 	byte key[CryptoPP::AES::DEFAULT_KEYLENGTH];
 	byte iv[CryptoPP::AES::BLOCKSIZE];
