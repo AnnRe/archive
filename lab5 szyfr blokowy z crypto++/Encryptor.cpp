@@ -6,54 +6,92 @@ using namespace std;
 void Encryptor::Run()
 {
 	// Cipher Text
-	string BlockCipherText;
-	string PreviousBlockCipherText;
 
 	//GetFirstG();
 	crypto.GetFirstG();
-
 	cout << "----SZYFROWANIE...\n";
-	for (int i = 0; i < PlainText.size(); i += AES::BLOCKSIZE)//rozbicie na bloki
+	for (int i = 0; i < PlainText.size(); i+=AES::BLOCKSIZE)//rozbicie na bloki
 	{
+		string BlockCipherText;
+		string PreviousBlockCipherText;
+
 		crypto.GetNextAESkey();
+		/*****string BlockText;
+		for (int j = i; j < i+16; j++)
+		{
+			if (j < PlainText.size())
+				BlockText.push_back(PlainText[j]);
+			else
+				BlockText.push_back('x');
+		}*****/
 
-		string BlockText;
-		BlockText = PlainText.substr(i, i + AES::BLOCKSIZE);
-		while (BlockText.size() < AES::BLOCKSIZE)
-			BlockText.push_back('x');
-		//cout << "===\n blok tekstu:" << BlockText << endl << "===\n";
+		byte blockText[AES::BLOCKSIZE];
+		for (int j = i; j < i + AES::BLOCKSIZE; j++)
+		{
+			if (j < PlainText.size())
+				blockText[j%AES::BLOCKSIZE] = PlainText[j];
+			else 
+				blockText[j%AES::BLOCKSIZE] = 'x';
+		}
+
+		/****cout << "===\n blok tekstu:" << BlockText << endl << "===("<<BlockText.length()<<")\n";*****/
+		cout << "===\n blok tekstu:" << blockText << endl << "===("<<sizeof blockText<<")\n";
+
+		string key;
+		StringSource ss("28292A2B2D2E2F30323334353738393A3C3D3E3F41424344464748494B4C4D4E", true,
+			new HexDecoder(
+			new StringSink(key)));
+
+		byte cipherData[AES::BLOCKSIZE];
+
+		cout << "plain:\n" << blockText << endl;
+
+		AES::Encryption alg1;
+		alg1.SetKey((byte*)key.c_str(), 32);
+		alg1.ProcessBlock(blockText, cipherData);
 		// Encryptor
-		CBC_Mode<AES>::Encryption
-			Encryptor(crypto.key, sizeof(crypto.key), crypto.iv);//CBC AES
-
-		for (int j = 0; j < AES::BLOCKSIZE; j++) //G xor textblock
-			BlockText[j] = (unsigned)BlockText[j] ^ crypto.G[j];
+		cout << "cipher:\n" << cipherData << endl;
+		/*CTR_Mode<AES>::Encryption
+			Encryptor(crypto.key, sizeof(crypto.key), crypto.iv);//CTR AES*/
+		/****for (int j = 0; j < AES::BLOCKSIZE; j++) //G xor textblock
+			BlockText[j] = (unsigned)BlockText[j] ^ crypto.G[j];****/
 
 		// Encryption AES
-		StringSource(BlockText.c_str(), true,
+		/****StringSource(BlockText, true,
 			new HexEncoder(
 			new StreamTransformationFilter(Encryptor,
-			new StringSink(BlockCipherText)
+			new StringSink(BlockCipherText),
+			BlockPaddingSchemeDef::NO_PADDING
 			) // HexEncoder
 			) // StreamTransformationFilter
-			); // StringSource
-		//cout << "po AES:\n" << BlockCipherText << endl;
+			); // StringSource*/
+		
+		/*****cout << "\tAES key:" << crypto.key << endl;
+		cout << "po AES:\n" << BlockCipherText << "\n("<<BlockCipherText.length()<<")"<<endl;*****/
 
 		PreviousBlockCipherText = BlockCipherText;
 
 		crypto.GetNextH();
 
 		//H1 xor AES output
-		for (int j = 0; j < BlockCipherText.length(); j++)
+		/****for (int j = 0; j < BlockCipherText.length(); j++)
 		{
 			unsigned char c = BlockCipherText[j] ^ crypto.H[j];
 			BlockCipherText[j] = c;
-		}
-		cipherText += BlockCipherText;
+		}****/
+		/****cout << "out:" << BlockCipherText.length() << endl;
+		cipherText += BlockCipherText;*****/
 		//Gi+1=MD5( output z AES, key, licznik);
 		crypto.GetNextG(PreviousBlockCipherText);
 
+		ofstream ofs("outu.txt");
+		ofs << cipherData;
+		ofs.close();
+		for (int j = 0; j < AES::BLOCKSIZE; j++)
+			cipherText.push_back(cipherData[j]);
+
 	}
+	cout << cipherText << endl;
 	cout << "----Koniec szyfrowania...\n";
 
 }
@@ -84,10 +122,9 @@ Encryptor::Encryptor(int totalLength, FileOperator _fileOperator)
 	try
 	{
 		// Message M
-		PlainText = "Ala ma kota, a kot ma Alê.";
+		PlainText = "Alla ma kota, a kot ma Alee i cos jeszcze tam dalej.";
 		Initialize();
 		Run();
-		
 	}
 	catch (Exception& e)
 	{

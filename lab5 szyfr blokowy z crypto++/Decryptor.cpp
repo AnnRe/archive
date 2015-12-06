@@ -2,6 +2,7 @@
 #include "ArchiveLoader.h"
 #include <modes.h>
 #include <hex.h>
+#include<sstream>
 
 using namespace CryptoPP;
 Decryptor::Decryptor(FileOperator _fileOperator)
@@ -17,56 +18,91 @@ Decryptor::~Decryptor()
 
 void Decryptor::Decrypt()//TODO:key!
 {
-	std::string previousRecoveredText;
-	std::string PlainText;
 	crypto.GetFirstG();
 	std::cout << "----DESZYFROWANIE...\n";
-
-	int blockSize = AES::BLOCKSIZE;
-	for (int i = 0; i < cipherText.size(); i += blockSize)
+	std::cout << "len:" << cipherText.length();
+	//int blockSize = AES::BLOCKSIZE;
+	for (int i = 0; i < cipherText.length(); i += AES::BLOCKSIZE)
 	{
+		std::string previousRecoveredText;
+		std::string PlainText;
+
 		crypto.GetNextAESkey();
-
-		std::string EncryptedBlockText = cipherText.substr(i, i + blockSize);
-		std::cout << "Block:" << EncryptedBlockText <<"(len="<<EncryptedBlockText.length()<<")"<< std::endl;
-		while (EncryptedBlockText.size() < AES::BLOCKSIZE)
-			EncryptedBlockText.push_back('x');
+		crypto.GetNextH();
 		//Decryptor
-		CryptoPP::CBC_Mode<CryptoPP::AES>::Decryption
-			Decryptor(crypto.key, sizeof(crypto.key), crypto.iv);
-		for (int j = 0; j < AES::BLOCKSIZE; j++) //G xor textblock
-			EncryptedBlockText[j] = (unsigned)EncryptedBlockText[j] ^ crypto.G[j];
+		std::string key;
+		StringSource ss("28292A2B2D2E2F30323334353738393A3C3D3E3F41424344464748494B4C4D4E", true,
+			new HexDecoder(
+			new StringSink(key)));
+		/*****
+		CryptoPP::CTR_Mode<CryptoPP::AES>::Decryption
+			decryptor(crypto.key, sizeof(crypto.key), crypto.iv);******/
+		/*****std::string EncryptedBlockText = "";
+		for (int j = i; j < i + 32; j++)
+		{
+			EncryptedBlockText.push_back(cipherText[j]);
+		}
+		std::cout << "++++++++\nBlock:" << EncryptedBlockText << "(len=" << EncryptedBlockText.length() << ")" << std::endl;*****/
+		/*while (EncryptedBlockText.size() < AES::BLOCKSIZE)
+			EncryptedBlockText.push_back('x');*/
 
+		/****for (int j = 0; j < EncryptedBlockText.length(); j++) //H xor textblock
+			EncryptedBlockText[j] = (unsigned)EncryptedBlockText[j] ^ crypto.H[j];*****/
+		/****previousRecoveredText = EncryptedBlockText;
+		byte previousG[16]; for (int k = 0; k < 16; k++) previousG[k] = crypto.G[k];
+
+		crypto.GetNextG(previousRecoveredText);
 
 		// Decryption AES
 		std::string RecoveredText;
 		try{
 			StringSource(EncryptedBlockText, true,
-			new CryptoPP::HexDecoder(
-			new StreamTransformationFilter(Decryptor,
-			new StringSink(RecoveredText)
-			) // HexDecoder 
-			) // StreamTransformationFilter
-			); // StringSource
-}
-catch (Exception &e)
-{
-	std::cout << e.what()<<std::endl;
-}
-		previousRecoveredText = RecoveredText;
+				new HexEncoder(
+				new StreamTransformationFilter(decryptor,
+				new StringSink(RecoveredText),
+				BlockPaddingSchemeDef::NO_PADDING
+				) // HexDecoder 
+				) // StreamTransformationFilter
+				); // StringSource*****/
 
-		crypto.GetNextH();
+			/****for (int j = 0; j < 16; j++)
+				RecoveredText[j] ^= previousG[j];***/
+		
 
-		for (int j = 0; j < EncryptedBlockText.length(); j++)
+		byte input[AES::BLOCKSIZE]; byte plain[AES::BLOCKSIZE];
+
+		for (int l = i; l < i+AES::BLOCKSIZE; l++)
+			input[l%AES::BLOCKSIZE] = cipherText[l];
+
+		AES::Decryption alg2;
+		alg2.SetKey((byte*)key.c_str(), 32);
+		alg2.ProcessBlock(input, plain);
+
+		/*for (int l = 0; l < AES::BLOCKSIZE; l++)
+			std::cout << std::hex << (int)plain[l] << " ";*/
+		std::cout << plain << std::endl;
+
+
+
+
+			/*****PlainText += RecoveredText;
+			std::cout << "\tkey:" << crypto.key << std::endl;
+			std::cout << "recovered:" << RecoveredText << std::endl;*****/
+
+		/*****}
+		catch (Exception &e)		{			std::cout << e.what() << std::endl;		}****/
+		/*****previousRecoveredText = RecoveredText;
+		crypto.GetNextH();*****/
+
+		/****for (int j = 0; j < EncryptedBlockText.length(); j++)
 		{
 			unsigned char c = EncryptedBlockText[j] ^ crypto.H[j];
 			EncryptedBlockText[j] = c;
-		}
+		}****/
 
-		PlainText += EncryptedBlockText;
-
-		crypto.GetNextG(previousRecoveredText);
+		/**** crypto.GetNextG(previousRecoveredText); ****/
 	}
+	/*****std::cout << cipherText << std::endl;****/
 }
 
 void Decryptor::Run()

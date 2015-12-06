@@ -12,6 +12,7 @@
 // Block Cipher Headers
 #include "SymmetricCipher.h"
 #include "md5.h"
+#include"aes.h"
 // AutoSeededRandomPool
 #include "osrng.h"
 
@@ -145,8 +146,55 @@ int main(int argc, char* argv[]) {
 		
 		
 	}
-	string text = "Ania nania";
-	cout << text.substr(4)<<endl;
+
+	/*string key;
+	StringSource ss("28292A2B2D2E2F30323334353738393A3C3D3E3F41424344464748494B4C4D4E", true,
+		new HexDecoder(
+		new StringSink(key)));
+
+	string plain;
+	StringSource sc("D9DC4DBA3021B05D67C0518F72B62BF1", true,
+		new HexDecoder(
+		new StringSink(plain)));
+
+	byte cipherData[AES::BLOCKSIZE];
+	byte recoverData[AES::BLOCKSIZE];
+	
+
+	AES::Encryption alg1;
+	alg1.SetKey((byte*)key.c_str(), 32);
+	alg1.ProcessBlock((byte*)plain.c_str(), cipherData);
+
+	ofstream ofs("cipher.txt");
+	ofs << cipherData;
+	ofs.close();
+
+	for (int i = 0; i < AES::BLOCKSIZE; i++)
+	{
+		cout << hex << (int)cipherData[i] << " ";
+	}
+	cout << endl;
+
+	AES::Decryption alg2;
+	alg2.SetKey((byte*)key.c_str(), 32);
+	alg2.ProcessBlock(cipherData, recoverData);
+	ofstream ofr("recover.txt");
+	ofr << cipherData;
+	ofr.close();
+	for (int i = 0; i < AES::BLOCKSIZE; i++)
+		cout << hex << (int)recoverData[i] << " ";
+
+	string stri;
+	ifstream ifs("cipher.txt");
+	byte cip[16];
+	ifs >> stri;
+	for (int i = 0; i < AES::BLOCKSIZE; i++)cip[i] = stri[i];
+	ifs.close();
+
+	alg2.ProcessBlock(cip, recoverData);
+	for (int i = 0; i < AES::BLOCKSIZE; i++)
+		cout << hex << (int)recoverData[i] << " ";*/
+
 	system("PAUSE");
 
 	return 0;
