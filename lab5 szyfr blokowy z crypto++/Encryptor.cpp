@@ -39,7 +39,7 @@ void Encryptor::Run()
 		//block ^G
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
-			blockText[j] += crypto.G[j];
+			blockText[j] ^= crypto.G[j];
 		}
 
 		byte cipherData[AES::BLOCKSIZE];

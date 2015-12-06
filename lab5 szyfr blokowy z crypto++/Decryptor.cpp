@@ -56,7 +56,7 @@ void Decryptor::Decrypt()//TODO:key!
 		//block ^G
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
-			decryptedTextBlock[j] -=crypto.Gprevious[j];
+			decryptedTextBlock[j] ^=crypto.Gprevious[j];
 		}
 			
 			/*std::cout << "\tkey:" << crypto.key << std::endl;
