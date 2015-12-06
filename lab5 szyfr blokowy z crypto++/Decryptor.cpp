@@ -132,7 +132,7 @@ void Decryptor::LoadEncryptedFile()//Joins all blocks to one
 	int n=archiveLoader.GetNumberOfFiles();
 	CipherText = archiveLoader.GetFilesContent(n);
 	size_t poz = dataFileOperator.numberOfDigits + CryptoPP::AES::BLOCKSIZE;
-	cipherText = CipherText.substr(poz);
+	cipherText = CipherText.substr(poz+1);
 
 }
 

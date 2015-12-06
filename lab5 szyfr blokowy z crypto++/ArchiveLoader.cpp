@@ -37,6 +37,7 @@ std::string ArchiveLoader::FileContent(std::string file_name)
 	std::ifstream file(file_name);
 	std::stringstream buffer;
 	buffer << file.rdbuf();
+	
 	return buffer.str();
 
 }
