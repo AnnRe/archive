@@ -15,7 +15,7 @@ ArchiveLoader::ArchiveLoader(std::string dir)
 
 std::string ArchiveLoader::GetFilesContent(int number_of_files)
 {
-	std::cout << "loading " << number_of_files << " files...\n";
+	//std::cout << "loading " << number_of_files << " files...\n";
 	std::string content = "";
 
 	for (int i = 1; i < number_of_files+1; i++)

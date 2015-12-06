@@ -22,7 +22,7 @@ void Decryptor::Decrypt()//TODO:key!
 	crypto.GetFirstG();
 	std::string decryptedText = "";
 	std::cout << "----DESZYFROWANIE...\n";
-	std::cout << "len:" << cipherText.length();
+	std::cout << "len:" << cipherText.length()<<std::endl;
 	//int blockSize = AES::BLOCKSIZE;
 	for (int i = 0; i < cipherText.length(); i += AES::BLOCKSIZE)
 	{
@@ -39,18 +39,6 @@ void Decryptor::Decrypt()//TODO:key!
 
 		crypto.GetNextG(previousRecoveredText);
 
-		// Decryption AES
-		std::string RecoveredText;
-		try{
-			StringSource(EncryptedBlockText, true,
-				new HexEncoder(
-				new StreamTransformationFilter(decryptor,
-				new StringSink(RecoveredText),
-				BlockPaddingSchemeDef::NO_PADDING
-				) // HexDecoder 
-				) // StreamTransformationFilter
-				); // StringSource*****/
-
 			/****for (int j = 0; j < 16; j++)
 				RecoveredText[j] ^= previousG[j];***/
 		
@@ -59,12 +47,14 @@ void Decryptor::Decrypt()//TODO:key!
 		for (int l = i; l < i+AES::BLOCKSIZE; l++)
 			encryptedTextBlock[l%AES::BLOCKSIZE] = cipherText[l];
 		
+		std::cout << "^H:" /*<< crypto.H */<< std::endl;
+
 		for (int j = 0; j < AES::BLOCKSIZE; j++) //H xor textblock
 		{
-			encryptedTextBlock[j] = (unsigned)encryptedTextBlock[j] ^ crypto.H[j];
+			encryptedTextBlock[j] -= crypto.H[j];
 			previousEncryptedTextBlock[j] = encryptedTextBlock[j];
 		}
-
+		// Decryption AES
 		AES::Decryption alg2;
 		alg2.SetKey((byte*)key.c_str(), 32);
 		alg2.ProcessBlock(encryptedTextBlock, decryptedTextBlock);
@@ -74,8 +64,8 @@ void Decryptor::Decrypt()//TODO:key!
 
 		/*****}
 		catch (Exception &e)		{			std::cout << e.what() << std::endl;		}****/
-		/*****previousRecoveredText = RecoveredText;
-		crypto.GetNextH();*****/
+		/*****previousRecoveredText = RecoveredText;*/
+		crypto.GetNextH();
 
 		/****for (int j = 0; j < EncryptedBlockText.length(); j++)
 		{
@@ -87,7 +77,9 @@ void Decryptor::Decrypt()//TODO:key!
 		for (int k = 0; k < AES::BLOCKSIZE; k++)
 			decryptedText.push_back(decryptedTextBlock[k]);
 	}
-	std::cout << decryptedText << std::endl;
+	
+	std::cout << "cipher:"<<cipherText << std::endl;
+	std::cout << "text:"<<decryptedText << std::endl;
 	/*****std::cout << cipherText << std::endl;****/
 }
 
@@ -109,7 +101,7 @@ void Decryptor::LoadConfiguration()
 	std::cout << "blocksize:"<<AES::BLOCKSIZE << "; " << "digits:"<<digits << "; " << "bundlesize:"<<dataFileOperator.BundleSize() << std::endl;
 	filesContent = archiveLoader.GetFilesContent(numberOfFiles);
 
-	std::cout << "loaded ciphertext:" << filesContent << std::endl;
+	//std::cout << "loaded ciphertext:" << filesContent << std::endl;
 	std::string len = filesContent.substr(0,digits);
 	std::istringstream iss(len);
 	int dl; iss >> dl;
@@ -122,7 +114,10 @@ void Decryptor::LoadConfiguration()
 	}
 	//IV.push_back(file2.get());
 
-	std::cout << "IV odtworzone:" << crypto.iv << " dl:" << sizeof crypto.iv << std::endl;
+	std::cout << "IV odtworzone:";
+	for(int k=0;k<AES::BLOCKSIZE;k++)
+		std::cout<< crypto.iv[k] ;
+	std::cout << std::endl;
 	/*std::cout<<"pojedynczo:\n";
 	for (int i = 0; i < sizeof crypto.iv; i++)
 	{

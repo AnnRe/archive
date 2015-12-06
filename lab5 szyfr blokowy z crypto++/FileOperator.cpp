@@ -171,7 +171,6 @@ void FileOperator::GetFileStructure()
 	}
 	closedir(dp);
 }
-
 void FileOperator::GetFileStructure(std::string pathDir)
 {
 	DIR *dp;
@@ -274,7 +273,6 @@ void FileOperator::GetBundleSize()
 	cout << "Podaj wielkosc paczek (B): ";//TODO:validation
 	cin>>bundleSize;
 }
-
 void FileOperator::LoadPath()
 {
 	try
