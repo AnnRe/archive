@@ -137,7 +137,6 @@ int main(int argc, char* argv[]) {
 
 	if (accesAllowed)
 	{
-		//podzia³ pliku na paczki i szyfrowanie....
 		while(!user.MainPasswordCorrect())//TODO
 			user.GetPassword();
 		

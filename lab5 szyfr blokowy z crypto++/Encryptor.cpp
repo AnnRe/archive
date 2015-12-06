@@ -24,16 +24,24 @@ void Encryptor::Run()
 			else
 				BlockText.push_back('x');
 		}*****/
-
+		string tmp = "";
 		byte blockText[AES::BLOCKSIZE];
 		for (int j = i; j < i + AES::BLOCKSIZE; j++)
 		{
 			if (j < PlainText.size())
+			{
 				blockText[j%AES::BLOCKSIZE] = PlainText[j];
-			else 
+				//tmp.push_back(PlainText[j]);
+			}
+			else
+			{
 				blockText[j%AES::BLOCKSIZE] = 'x';
+				//tmp.push_back('x');
+			}
 		}
-
+		/*
+		HexEncoder enc; enc.Put((byte*)tmp.data(), tmp.length());
+		enc.MessageEnd(); enc.Get(blockText,AES::BLOCKSIZE);*/
 		/****cout << "===\n blok tekstu:" << BlockText << endl << "===("<<BlockText.length()<<")\n";*****/
 		cout << "===\n blok tekstu:" << blockText << endl << "===("<<sizeof blockText<<")\n";
 
@@ -51,6 +59,7 @@ void Encryptor::Run()
 		alg1.ProcessBlock(blockText, cipherData);
 		// Encryptor
 		cout << "cipher:\n" << cipherData << endl;
+
 		/*CTR_Mode<AES>::Encryption
 			Encryptor(crypto.key, sizeof(crypto.key), crypto.iv);//CTR AES*/
 		/****for (int j = 0; j < AES::BLOCKSIZE; j++) //G xor textblock

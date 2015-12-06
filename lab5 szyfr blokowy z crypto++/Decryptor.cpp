@@ -70,7 +70,6 @@ void Decryptor::Decrypt()//TODO:key!
 		
 
 		byte input[AES::BLOCKSIZE]; byte plain[AES::BLOCKSIZE];
-
 		for (int l = i; l < i+AES::BLOCKSIZE; l++)
 			input[l%AES::BLOCKSIZE] = cipherText[l];
 

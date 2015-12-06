@@ -26,8 +26,7 @@ void Crypto::GetNextAESkey()
 {
 	//std::cout << "---Getting next AES key ---\n";
 
-	CryptoPP::SHA().CalculateDigest(key, key, sizeof(key));//generowanie i=tego klucza  //TODO:w³¹czyæ wszystkie 3 funkcje haszuj¹ce
-
+	CryptoPP::SHA().CalculateDigest(key, key, sizeof(key));//generowanie i=tego klucza  
 }
 void Crypto::GetNextH()
 {
