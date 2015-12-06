@@ -21,6 +21,7 @@ public:
 
 	byte G[CryptoPP::MD5::DIGESTSIZE];
 	byte H[CryptoPP::SHA256::DIGESTSIZE];
+	byte Gprevious[CryptoPP::MD5::DIGESTSIZE];
 	void Initialize();
 
 private:

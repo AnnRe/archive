@@ -7,7 +7,6 @@ void Encryptor::Run()
 {
 	// Cipher Text
 
-	//GetFirstG();
 	crypto.GetFirstG();
 	cout << "----SZYFROWANIE...\n";
 	for (int i = 0; i < PlainText.size(); i+=AES::BLOCKSIZE)//rozbicie na bloki
@@ -16,14 +15,7 @@ void Encryptor::Run()
 		string PreviousBlockCipherText;
 
 		crypto.GetNextAESkey();
-		/*****string BlockText;
-		for (int j = i; j < i+16; j++)
-		{
-			if (j < PlainText.size())
-				BlockText.push_back(PlainText[j]);
-			else
-				BlockText.push_back('x');
-		}*****/
+		
 		string tmp = "";
 		byte blockText[AES::BLOCKSIZE];
 		for (int j = i; j < i + AES::BLOCKSIZE; j++)
@@ -39,10 +31,6 @@ void Encryptor::Run()
 				//tmp.push_back('x');
 			}
 		}
-		/*
-		HexEncoder enc; enc.Put((byte*)tmp.data(), tmp.length());
-		enc.MessageEnd(); enc.Get(blockText,AES::BLOCKSIZE);*/
-		/****cout << "===\n blok tekstu:" << BlockText << endl << "===("<<BlockText.length()<<")\n";*****/
 		
 		string key;
 		StringSource ss("28292A2B2D2E2F30323334353738393A3C3D3E3F41424344464748494B4C4D4E", true,
@@ -61,27 +49,32 @@ void Encryptor::Run()
 			BlockText[j] = (unsigned)BlockText[j] ^ crypto.G[j];****/
 
 		PreviousBlockCipherText = BlockCipherText;
-
+		std::cout << "plain:";
+		for (int k = 0; k < AES::BLOCKSIZE; k++)
+			std::cout << blockText[k];
 		crypto.GetNextH();
-
+		std::cout <<std::endl<< "^H:"/*<<crypto.H*/ << std::endl;
+		std::cout << "before:";
+		for (int k = 0; k < AES::BLOCKSIZE; k++)
+			std::cout << cipherData[k];
+		std::cout <<std::endl<< "After:";
 		//H1 xor AES output
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
-			unsigned char c = cipherData[j] ^ crypto.H[j];
-			cipherData[j] = c;
+			cipherData[j] +=crypto.H[j];
+			std::cout << cipherData[j];
 		}
+		std::cout << std::endl;
 		/****cout << "out:" << BlockCipherText.length() << endl;
 		cipherText += BlockCipherText;*****/
 		//Gi+1=MD5( output z AES, key, licznik);
 		crypto.GetNextG(PreviousBlockCipherText);
 
-		ofstream ofs("outu.txt");
-		ofs << cipherData;
-		ofs.close();
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 			cipherText.push_back(cipherData[j]);
 
 	}
+	cout << "cipher:" << cipherText << endl;
 	cout << "----Koniec szyfrowania...\n";
 
 }
@@ -112,7 +105,7 @@ Encryptor::Encryptor(int totalLength, FileOperator _fileOperator)
 	try
 	{
 		// Message M
-		PlainText = "Alla ma kota, a kot ma Alee i cos jeszcze tam dalej.";
+		PlainText = "Alla ma kota, a kot ma Alee i cos jeszcze tam dalej jeden dwa i w koñcu trzy.";
 		Initialize();
 		Run();
 	}
@@ -144,7 +137,7 @@ void Encryptor::SplitToFiles()
 {
 	cout << "Splitting to files ... " << endl;
 	
-	cout << "Cipher text (encryptor):" << cipherText<<endl;
+	//cout << "Cipher text (encryptor):" << cipherText<<endl;
 	int bundleSize = fileOperator.BundleSize();
 	int bundleNumber = 1;
 	fileOperator.CreateArchiveDir();
