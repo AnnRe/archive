@@ -96,18 +96,26 @@ int main(int argc, char* argv[]) {
 			system("cls");
 			cout << "Logowanie pomyœlne"<<endl;
 			FileEncrypter encrypter;
-			bool run = true;
+			bool run = true; system("cls");
 			while (run)
 			{
-				system("cls");
 				encrypter.PrintMenu();
 				char choice;
 				cin >> choice;
-				switch (toupper(choice))
+				switch (choice)
 				{
-				case 'S':
+				case 'P':case'p':
 					encrypter.PrintStructure();
 					break;
+				case 'S':case's':
+					encrypter.Encrypt();
+					system("cls");
+					break; 
+				case 'D':case'd':
+						encrypter.Decrypt();
+						system("cls");
+						break;
+
 				default:
 					run = false;
 				}

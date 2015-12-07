@@ -7,7 +7,7 @@ public:
 	ArchiveLoader();
 	ArchiveLoader(std::string dir);
 	~ArchiveLoader();
-	std::string FileContent(std::string file_name);
+	static std::string FileContent(std::string file_name);
 	std::string GetFilesContent(int number_of_files);
 	std::string archiveDir;
 	int GetNumberOfFiles();

@@ -240,8 +240,9 @@ void FileOperator::GetFileStructure(std::string pathDir)
 }
 void FileOperator::ListFileStructure()
 {
+	//LoadConfigurationAndStructure();
 	system("cls");
-	cout << "STRUKTURA:" << endl;
+	cout << "\n\n\tSTRUKTURA:" << endl;
 	for (int i = 0; i < fileNames.size(); i++)
 	{
 		int depth = calculateDepth(fileNames[i]);
