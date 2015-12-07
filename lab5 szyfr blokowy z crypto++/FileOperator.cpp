@@ -15,6 +15,7 @@ FileOperator::FileOperator()
 	directory = "";
 	if (FirstLogon())
 	{
+
 		GetConfiguration();
 		GetFileStructure();
 		//ListFileStructure();
@@ -98,6 +99,18 @@ std::string FileOperator::GetArchiveDir() const
 }
 
 
+std::string FileOperator::GetTotalContent()
+{
+	std::string total="";
+	for (int i = 0; i < fileNames.size();i++)
+	if (fileTypes[fileNames[i]] == "DT_REG")
+	{
+		std::string content=ArchiveLoader::FileContent(directory+"\\"+fileNames[i]);
+		total+=content;
+	}
+	return total;
+}
+
 int FileOperator::NumberOfFiles()
 {
 	int n = 0;
@@ -114,7 +127,16 @@ int FileOperator::BundleSize()
 
 bool FileOperator::FirstLogon()
 {
-	return false;
+	ifstream conf("app.config");
+	int n = 0;
+	string line;
+	while (!conf.eof())
+	{
+		getline(conf, line);
+		n++;
+	}
+	conf.close();
+	return n<1;
 }
 void FileOperator::GetPath()
 {
@@ -216,15 +238,16 @@ void FileOperator::GetFileStructure(std::string pathDir)
 	}
 	closedir(dp);
 }
-//TODO: dodaæ w pliku ca³¹ œcie¿kê
 void FileOperator::ListFileStructure()
 {
-	cout << "struktura:" << endl;
+	system("cls");
+	cout << "STRUKTURA:" << endl;
 	for (int i = 0; i < fileNames.size(); i++)
 	{
 		int depth = calculateDepth(fileNames[i]);
 		for (int j = 0; j < depth; j++)
-			cout << "\t";
+			cout << "   ";
+
 		cout << fileNames[i] << endl;
 	}
 

@@ -56,9 +56,6 @@ void Crypto::Initialize()
 	//prng.GenerateBlock(key, sizeof(iv));//TODO:zamieniæ na has³o u¿ytkownika
 	for (int i = 0; i < CryptoPP::AES::BLOCKSIZE; i++)
 		key[i] = 0;
-	std::cout << "\nIV:";
-	for(int k=0;k< CryptoPP::AES::BLOCKSIZE;k++)
-		std::cout<< iv[k] ;
 	std::cout << std::endl;
 	/*std::cout<< "pojedynczo:\n";
 	for (int i = 0; i < sizeof iv; i++)

@@ -5,21 +5,36 @@
 
 FileEncrypter::FileEncrypter()
 {
-	Encryptor encryptor(fileOperator.totalLength,fileOperator);
+	
+	
+}
+void FileEncrypter::Encrypt()
+{
+	Encryptor encryptor(fileOperator.totalLength, fileOperator);
 	encryptor.SplitToFiles();
 	//encryptor.PrintModifiedFiles();
+}
+void FileEncrypter::Decrypt()
+{
 	Decryptor decryptor(fileOperator);
 	decryptor.Run();
-	/*for (int i = 0; i < archiveFileOperator.fileNames.size(); i++)
-	{
-		std::string name = archiveFileOperator.fileNames[i];
-		if (archiveFileOperator.fileTypes[name] == "DT_REG")
-		{
-			std::cout << "Szyfrowanie " << name << std::endl;
-		}
-	}*/
 }
 
+void FileEncrypter::PrintStructure()
+{
+	fileOperator.ListFileStructure();
+}
+
+void FileEncrypter::PrintMenu()
+{
+	std::cout << "\n\n";
+	std::cout << "\tMENU:" << std::endl;
+	std::cout << "\t\t (P) - struktura plikow" << std::endl;
+	std::cout << "\t\t (S) - szyfrowanie plikow" << std::endl;
+	std::cout << "\t\t (D) - deszyfrowanie plikow" << std::endl;
+	//std::cout << "\t (Z) - Lista zmienionych plikow" << std::endl;
+	std::cout << std::endl;
+}
 
 FileEncrypter::~FileEncrypter()
 {

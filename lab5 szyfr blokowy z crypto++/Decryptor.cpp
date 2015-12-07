@@ -22,8 +22,6 @@ void Decryptor::Decrypt()//TODO:key!
 	crypto.GetFirstG();
 	std::string decryptedText = "";
 	std::cout << "----DESZYFROWANIE...\n";
-	std::cout << "len:" << cipherText.length()<<std::endl;
-	//int blockSize = AES::BLOCKSIZE;
 	for (int i = 0; i < cipherText.length(); i += AES::BLOCKSIZE)
 	{
 		crypto.GetNextAESkey();
@@ -39,8 +37,6 @@ void Decryptor::Decrypt()//TODO:key!
 		for (int l = i; l < i+AES::BLOCKSIZE; l++)
 			encryptedTextBlock[l%AES::BLOCKSIZE] = cipherText[l];
 		
-		std::cout << "^H:" /*<< crypto.H */<< std::endl;
-
 		for (int j = 0; j < AES::BLOCKSIZE; j++) //H xor textblock
 		{
 			encryptedTextBlock[j] -= crypto.H[j];
@@ -58,19 +54,11 @@ void Decryptor::Decrypt()//TODO:key!
 		{
 			decryptedTextBlock[j] ^=crypto.Gprevious[j];
 		}
-			
-			/*std::cout << "\tkey:" << crypto.key << std::endl;
-			std::cout << "recovered:" << RecoveredText << std::endl;*****/
-
-		/*****}
-		catch (Exception &e)		{			std::cout << e.what() << std::endl;		}****/
 		crypto.GetNextH();
 
 		for (int k = 0; k < AES::BLOCKSIZE; k++)
 			decryptedText.push_back(decryptedTextBlock[k]);
 	}
-	std::cout << "cipher:"<<cipherText << std::endl;
-	std::cout << "text:"<<decryptedText << std::endl;
 }
 
 void Decryptor::Run()
@@ -88,32 +76,17 @@ void Decryptor::LoadConfiguration()
 	int digits = dataFileOperator.numberOfDigits;
 	
 	int numberOfFiles = (AES::BLOCKSIZE + digits) / dataFileOperator.BundleSize()+1;
-	std::cout << "blocksize:"<<AES::BLOCKSIZE << "; " << "digits:"<<digits << "; " << "bundlesize:"<<dataFileOperator.BundleSize() << std::endl;
 	filesContent = archiveLoader.GetFilesContent(numberOfFiles);
 
-	//std::cout << "loaded ciphertext:" << filesContent << std::endl;
 	std::string len = filesContent.substr(0,digits);
 	std::istringstream iss(len);
 	int dl; iss >> dl;
 
 	//reading initialization string IV
-
 	for (int i = digits; i < digits + CryptoPP::AES::BLOCKSIZE; i++)
 	{
 		crypto.iv[i - digits] = filesContent[i];
 	}
-	//IV.push_back(file2.get());
-
-	std::cout << "IV odtworzone:";
-	for(int k=0;k<AES::BLOCKSIZE;k++)
-		std::cout<< crypto.iv[k] ;
-	std::cout << std::endl;
-	/*std::cout<<"pojedynczo:\n";
-	for (int i = 0; i < sizeof crypto.iv; i++)
-	{
-		std::cout << crypto.iv[i]<< std::endl;
-	}
-	std::cout << "Key:" << crypto.key << std::endl;*/
 }
 
 void Decryptor::LoadEncryptedFile()//Joins all blocks to one

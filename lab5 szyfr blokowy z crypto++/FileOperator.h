@@ -25,7 +25,7 @@ public:
 	std::vector<std::string> fileNames;
 	std::map<std::string, int> fileSizes;//w przypadku katalogow -1 tzn zapisana jego struktura -2 nie
 	std::map<std::string, std::string> fileTypes;
-
+	std::string GetTotalContent();
 	int totalLength;//sum of all files length
 
 	int NumberOfFiles();

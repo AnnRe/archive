@@ -17,16 +17,19 @@ public:
 	bool VerifyLicense();
 	void ImportID();
 	void ClearKeyInFile();
+	void SavePasswd(std::string mainPasswd);
+	bool GetNewPassword();
+	bool HasSetPasswd();
 	int licenceState;//0-nothing, 1-id generated, 2-registred
 	void GetPassword();//gets main password do app
 	bool MainPasswordCorrect();
-
+	std::string GetSha(std::string passwd);
 private:
 	bool hasLicense;
 	std::string mainPasswordHash;
 	std::string _licenseKey;
 	ID id;
-	void CheckLicense();
+	void CheckLicenseState();
 	std::string MainPassword;
 
 

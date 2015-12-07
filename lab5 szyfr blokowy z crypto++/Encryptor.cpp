@@ -16,19 +16,16 @@ void Encryptor::Run()
 
 		crypto.GetNextAESkey();
 		
-		string tmp = "";
 		byte blockText[AES::BLOCKSIZE];
 		for (int j = i; j < i + AES::BLOCKSIZE; j++)
 		{
 			if (j < PlainText.size())
 			{
 				blockText[j%AES::BLOCKSIZE] = PlainText[j];
-				//tmp.push_back(PlainText[j]);
 			}
 			else
 			{
 				blockText[j%AES::BLOCKSIZE] = 'x';
-				//tmp.push_back('x');
 			}
 		}
 		
@@ -54,22 +51,17 @@ void Encryptor::Run()
 			previousCipherData[k] = cipherData[k];
 		//g1
 		crypto.GetNextG(previousCipherData);
-		std::cout << "plain:";
-		for (int k = 0; k < AES::BLOCKSIZE; k++)
-			std::cout << blockText[k];
 		crypto.GetNextH();
 		//H1 xor AES output
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
 			cipherData[j] +=crypto.H[j];
 		}
-		std::cout << std::endl;
 
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 			cipherText.push_back(cipherData[j]);
 
 	}
-	cout << "cipher:" << cipherText << endl;
 	cout << "----Koniec szyfrowania...\n";
 
 }
@@ -100,7 +92,7 @@ Encryptor::Encryptor(int totalLength, FileOperator _fileOperator)
 	try
 	{
 		// Message M
-		PlainText = "Alla ma kota, a kot ma Alee i cos jeszcze tam dalej jeden dwa i w koñcu trzy.";
+		PlainText = fileOperator.GetTotalContent();//"Alla ma kota, a kot ma Alee i cos jeszcze tam dalej jeden dwa i w koñcu trzy.";
 		Initialize();
 		Run();
 	}
@@ -132,7 +124,6 @@ void Encryptor::SplitToFiles()
 {
 	cout << "Splitting to files ... " << endl;
 	
-	//cout << "Cipher text (encryptor):" << cipherText<<endl;
 	int bundleSize = fileOperator.BundleSize();
 	int bundleNumber = 1;
 	fileOperator.CreateArchiveDir();

@@ -3,7 +3,7 @@
 
 User::User()
 {
-	CheckLicense();
+	CheckLicenseState();
 }
 
 
@@ -16,29 +16,38 @@ void User::ImportID()
 	_licenseKey = id.ImportIDAndGetKeyFromFile();
 }
 
-void User::CheckLicense()
+void User::CheckLicenseState()
 {
 	std::ifstream file("license.txt");
 	int fileLines = 0;
 	std::string line;
 	if (file.is_open())
 	{
-
 		while (!file.eof())//file exists
 		{
 			std::getline(file, line);
 			fileLines++;
 		}
 		file.close();
-		if (fileLines == 2)//only id generated
+		
+		switch (fileLines)
 		{
-			licenceState= 2;
+		case 2:
+			licenceState = 2;
+			break;
+		case 1://only ID generated
+			licenceState = 1;
+			break;
+		case 0://empty file
+			licenceState = 0;
+			break;
+		case 3://Id generated, key saved,
+			licenceState = 3;
+			break;
+		default://Id generated, key saved, passwd set
+			licenceState = 4;
+			break;
 		}
-		else
-		{
-			licenceState= 1;
-		}
-
 	}
 	else
 	{
@@ -96,6 +105,49 @@ std::string User::ImportId()
 	return ide;
 }
 
+bool User::GetNewPassword()
+{
+	system("cls");
+	std::cout << "USTAL HASLO GLOWNE:\n" << std::endl;
+	std::string pass;
+	bool state = false;
+	while (true)
+	{
+		std::cout << "Podaj haslo glowne: ";
+		 std::cin >> pass;
+		std::cout << "Powtorz haslo: ";
+		std::string pass2; std::cin >> pass2;
+		if (pass == pass2)
+		{
+			system("cls");
+			std::cout << "Hasla zgodne.\n";
+			state = true;
+			break;
+		}
+	}
+	SavePasswd(pass);
+	return state;
+}
+
+bool User::HasSetPasswd()
+{
+	std::ifstream ifs("license.txt");
+	int n = 0;
+	std::string line;
+	while (!ifs.eof())
+	{
+		std::getline(ifs, line);
+		n++;
+	}
+	ifs.close();
+	if (n == 4)
+	{
+		if (line.length() == CryptoPP::SHA1::DIGESTSIZE)
+			return true;
+	}
+	return false;
+}
+
 void User::ClearKeyInFile()
 {
 	std::ofstream file("license.txt"); file.clear();
@@ -104,23 +156,58 @@ void User::ClearKeyInFile()
 	file.close();
 }
 
+void User::SavePasswd(std::string mainPasswd)
+{
+	MainPassword = mainPasswd;
+
+		//saving user passwd # to license file
+	std::ofstream of;
+	of.open("license.txt", std::ofstream::out | std::ofstream::app); 
+	of << std::endl;
+	std::string hash= GetSha(MainPassword);
+	of << hash;
+	of.close();
+
+
+}
+
 void User::GetPassword()
 {
 
-	//TODO: check if password already exists
-
-	//if true
-	std::cout << "Podaj has³o do aplikacji:";
+	std::cout << "Podaj haslo do aplikacji:";
 	std::cin >> MainPassword;
-
-	//if false
-	//save password
-
-	//calculate #
-	//save # to file
 }
 
 bool User::MainPasswordCorrect()
 {
-	return true;//TODO: compare with file
+	std::ifstream ifs("license.txt");
+	std::string line;
+	for (int i = 0; i <2; i++)
+		std::getline(ifs, line);
+	std::string sha = "";
+	char ch;
+	while (!ifs.eof())
+	{
+		ifs.get(ch);
+		sha.push_back(ch);
+	}
+	ifs.close();
+	std::string givenPasswdHash = GetSha(MainPassword);
+	if (sha.substr(0,15) == givenPasswdHash.substr(0,15))
+		return true;
+	return false;
+}
+
+std::string User::GetSha(std::string passwd)
+{
+	CryptoPP::SHA1 sha; // SHA1, SHA224, SHA256, SHA384, SHA512
+	sha.Update((byte*)passwd.c_str(), 5);
+	int odpSize = sha.DigestSize();
+	byte *odp = new byte[odpSize];
+	sha.Final(odp);
+
+	std::string tmp = "";
+	for (int i = 0; i < CryptoPP::SHA1::DIGESTSIZE; i++)
+		tmp.push_back(odp[i]);
+	return tmp;
 }
