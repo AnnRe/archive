@@ -15,7 +15,6 @@ FileOperator::FileOperator()
 	directory = "";
 	if (FirstLogon())
 	{
-
 		GetConfiguration();
 		GetFileStructure();
 		//ListFileStructure();
@@ -79,8 +78,15 @@ void FileOperator::CreateArchiveDir()
 	string dd = this->directory;
 	size_t poz = dd.find_last_of("\\");
 	archiveDir ="\""+ dd.substr(0, poz + 1);
-	archiveDir += "archive"; archiveDir += "\"";
+	archiveDir += "archive"; 
 	//cout << "Creating archive\n";
+	string clearDirCommand = "del /Q " + archiveDir + "\\*\"";
+	system(clearDirCommand.c_str());
+	archiveDir += "\"";
+	string deleteCommand = "rmdir /Q " + archiveDir;
+
+	system(deleteCommand.c_str());
+
 	string command = "mkdir " + archiveDir;
 
 	system(command.c_str());
@@ -89,6 +95,20 @@ void FileOperator::CreateArchiveDir()
 FileOperator::~FileOperator()
 {
 }
+
+std::string FileOperator::GetExtension(std::string fileNameWithExtension)
+{
+	size_t poz = fileNameWithExtension.find_last_of('.');
+	return fileNameWithExtension.substr(poz);
+}
+
+std::string FileOperator::GetName(std::string fileNameWithExtension)
+{
+	size_t poz = fileNameWithExtension.find_last_of('.');
+	std::string toReturn = fileNameWithExtension.substr(0, poz);
+	return toReturn;
+}
+
 std::string FileOperator::GetArchiveDir() const
 {
 	string dir;
@@ -107,6 +127,8 @@ std::string FileOperator::GetTotalContent()
 	{
 		std::string content=ArchiveLoader::FileContent(directory+"\\"+fileNames[i]);
 		total+=content;
+		std::cout << "file " + fileNames[i] + " content" << std::endl;
+		std::cout << content << std::endl;
 	}
 	return total;
 }
@@ -149,6 +171,7 @@ void FileOperator::GetPath()
 
 void FileOperator::GetFileStructure()
 {
+	fileNames.clear();
 	DIR *dp;
 	FILE *fp;
 	int i = 0;
@@ -192,6 +215,7 @@ void FileOperator::GetFileStructure()
 		}
 	}
 	closedir(dp);
+	SaveFileStructure("structure.txt");
 }
 void FileOperator::GetFileStructure(std::string pathDir)
 {
@@ -242,6 +266,7 @@ void FileOperator::ListFileStructure()
 {
 	//LoadConfigurationAndStructure();
 	system("cls");
+	GetFileStructure();
 	cout << "\n\n\tSTRUKTURA:" << endl;
 	for (int i = 0; i < fileNames.size(); i++)
 	{

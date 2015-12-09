@@ -5,11 +5,13 @@
 
 FileEncrypter::FileEncrypter()
 {
-	
+	std::cout << "FileEncrypter" << std::endl;
 	
 }
 void FileEncrypter::Encrypt()
 {
+	fileOperator.GetFileStructure();
+	
 	Encryptor encryptor(fileOperator.totalLength, fileOperator);
 	encryptor.SplitToFiles();
 	//encryptor.PrintModifiedFiles();

@@ -34,10 +34,10 @@ ArchiveLoader::~ArchiveLoader()
 
 std::string ArchiveLoader::FileContent(std::string file_name)
 {
-	std::ifstream file(file_name);
+	std::ifstream file(file_name, std::ios_base::binary);
 	std::stringstream buffer;
 	buffer << file.rdbuf();
-	
+	std::string x = buffer.str();
 	return buffer.str();
 
 }

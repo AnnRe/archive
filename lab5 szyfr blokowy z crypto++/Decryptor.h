@@ -10,6 +10,7 @@ public:
 	Decryptor(FileOperator _fileOperator);
 	~Decryptor();
 	void Decrypt();
+	void SaveToFiles();
 	void Run();
 	
 private:

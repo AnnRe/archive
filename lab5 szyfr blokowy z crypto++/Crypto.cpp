@@ -25,8 +25,13 @@ void Crypto::GetFirstG()
 void Crypto::GetNextAESkey()
 {
 	//std::cout << "---Getting next AES key ---\n";
-
-	CryptoPP::SHA().CalculateDigest(key, key, sizeof(key));//generowanie i=tego klucza  
+	std::string key_string = "";
+	byte *digest=new byte[CryptoPP::SHA::DIGESTSIZE];
+	CryptoPP::SHA().CalculateDigest(digest, key, CryptoPP::AES::DEFAULT_KEYLENGTH);//generowanie i=tego klucza  
+	for (int i = 0; i < CryptoPP::AES::DEFAULT_KEYLENGTH; i++)
+	{
+		key[i] = digest[i];
+	}
 }
 void Crypto::GetNextH()
 {
@@ -51,8 +56,11 @@ void Crypto::Initialize()
 {
 	//std::cout << "Initializing ...." << std::endl;
 	// Key and IV setup
-	memset(iv, 0x01, CryptoPP::AES::BLOCKSIZE);
-	prng.GenerateBlock(iv, sizeof(iv));
+	//memset(iv, 0x01, CryptoPP::AES::BLOCKSIZE);
+	//prng.GenerateBlock(iv, sizeof(iv));//TODO: losowe
+	for (int i = 0; i < CryptoPP::AES::BLOCKSIZE; i++)
+		iv[i] = 'A'+i;
+	
 	//prng.GenerateBlock(key, sizeof(iv));//TODO:zamieniæ na has³o u¿ytkownika
 	for (int i = 0; i < CryptoPP::AES::BLOCKSIZE; i++)
 		key[i] = 0;

@@ -36,7 +36,7 @@ void Encryptor::Run()
 		//block ^G
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
-			blockText[j] ^= crypto.G[j];
+			//blockText[j] -= crypto.G[j];
 		}
 
 		byte cipherData[AES::BLOCKSIZE];
@@ -48,21 +48,23 @@ void Encryptor::Run()
 		// Encryptor
 		
 		for (int k = 0; k < AES::BLOCKSIZE; k++)
-			previousCipherData[k] = cipherData[k];
+			previousCipherData[k] = (unsigned)cipherData[k];
 		//g1
 		crypto.GetNextG(previousCipherData);
 		crypto.GetNextH();
 		//H1 xor AES output
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
-			cipherData[j] +=crypto.H[j];
+			//cipherData[j] +=crypto.H[j];
 		}
 
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
-			cipherText.push_back(cipherData[j]);
+			cipherText.push_back((unsigned)cipherData[j]);
 
 	}
-	cout << "----Koniec szyfrowania...\n";
+	string x = cipherText;
+	cout << "ciphertext:\n" << cipherText << endl;
+	cout << "----Koniec szyfrowania...\n wyjsciowy tekst ma dl:"<<cipherText.length()<<endl;
 
 }
 
@@ -74,9 +76,9 @@ void Encryptor::Initialize()
 
 	cipherText = sizeString;
 	// Configuration to ciphertext
-	stringstream ss;
-	ss << crypto.iv;
-	cipherText+= ss.str();
+	for (int i = 0; i < AES::BLOCKSIZE;i++)
+		cipherText.push_back(crypto.iv[i]);
+	string x = cipherText;
 }
 
 void Encryptor::PrintModifiedFiles()
@@ -93,6 +95,7 @@ Encryptor::Encryptor(int totalLength, FileOperator _fileOperator)
 	{
 		// Message M
 		PlainText = fileOperator.GetTotalContent();//"Alla ma kota, a kot ma Alee i cos jeszcze tam dalej jeden dwa i w koñcu trzy.";
+		string x = PlainText;
 		Initialize();
 		Run();
 	}
@@ -123,7 +126,6 @@ string Encryptor::int_to_string(int value, int length)
 void Encryptor::SplitToFiles()
 {
 	cout << "Splitting to files ... " << endl;
-	
 	int bundleSize = fileOperator.BundleSize();
 	int bundleNumber = 1;
 	fileOperator.CreateArchiveDir();
@@ -139,7 +141,7 @@ void Encryptor::SplitToFiles()
 		stringstream ss; ss << bundleNumber++; fileName += ss.str();
 		fileName += ".txt";
 
-		ofstream os(fileName);
+		ofstream os(fileName, std::ios_base::binary);
 		os << fileContent;
 		os.close();
 
@@ -148,6 +150,3 @@ void Encryptor::SplitToFiles()
 	}
 
 }
-//TODO:
-// poprawiæ hashe
-// deszyfrowanie

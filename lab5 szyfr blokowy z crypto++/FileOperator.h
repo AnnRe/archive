@@ -21,6 +21,8 @@ public:
 	FileOperator(std::string dir);
 	FileOperator();
 	~FileOperator();
+	static std::string GetExtension(std::string fileNameWithExtension);
+	static std::string GetName(std::string fileNameWithExtension);
 	//std::string GetArchiveDir();
 	std::vector<std::string> fileNames;
 	std::map<std::string, int> fileSizes;//w przypadku katalogow -1 tzn zapisana jego struktura -2 nie
@@ -36,7 +38,7 @@ public:
 	void ListFileStructure();
 	std::string directory;
 	int numberOfDigits;
-
+	std::string FilesText;
 
 private:
 	int bundleSize;

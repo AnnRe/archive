@@ -95,7 +95,9 @@ int main(int argc, char* argv[]) {
 		{
 			system("cls");
 			cout << "Logowanie pomyœlne"<<endl;
+			
 			FileEncrypter encrypter;
+			cout << "Po encrypter" << endl;
 			bool run = true; system("cls");
 			while (run)
 			{
@@ -109,11 +111,13 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'S':case's':
 					encrypter.Encrypt();
-					system("cls");
+					getchar();
+					//system("cls");
+
 					break; 
 				case 'D':case'd':
 						encrypter.Decrypt();
-						system("cls");
+						//system("cls");
 						break;
 
 				default:
