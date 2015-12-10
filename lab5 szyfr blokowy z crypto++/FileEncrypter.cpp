@@ -32,7 +32,10 @@ void FileEncrypter::PrintMenu()
 	std::cout << "\t\t (P) - struktura plikow" << std::endl;
 	std::cout << "\t\t (S) - szyfrowanie plikow" << std::endl;
 	std::cout << "\t\t (D) - deszyfrowanie plikow" << std::endl;
-	std::cout << "\t\t (O) - odswiezenie listy plikow" << std::endl;
+	std::cout << "\t\t (O) - odswiezenie listy plikow\n" << std::endl;
+	std::cout << "\t\t (Z) - zmiana hasla" << std::endl;
+	std::cout << "\t\t (C) - zmiana sciezki do danych" << std::endl;
+
 	//std::cout << "\t (Z) - Lista zmienionych plikow" << std::endl;
 	std::cout << "------------------------------------------------\n" << std::endl;
 }
@@ -40,6 +43,12 @@ void FileEncrypter::PrintMenu()
 void FileEncrypter::Refresh()
 {
 	fileOperator.GetFileStructure(true);
+	fileOperator.ListFileStructure();
+}
+
+void FileEncrypter::ChangePath()
+{
+	fileOperator.ChangePath();
 }
 
 FileEncrypter::~FileEncrypter()

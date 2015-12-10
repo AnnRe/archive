@@ -10,6 +10,7 @@ public:
 	void PrintStructure();
 	~FileEncrypter();
 	void Refresh();
+	void ChangePath();
 	static void PrintMenu();
 private:
 	FileOperator fileOperator;

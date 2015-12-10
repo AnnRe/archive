@@ -20,6 +20,8 @@ public:
 	void SavePasswd(std::string mainPasswd);
 	bool GetNewPassword();
 	bool HasSetPasswd();
+	void SaveNewPasswd(std::string newPasswd);
+	void ChangePassword();
 	int licenceState;//0-nothing, 1-id generated, 2-registred
 	void GetPassword();//gets main password do app
 	bool MainPasswordCorrect();

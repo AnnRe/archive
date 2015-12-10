@@ -145,6 +145,29 @@ void FileOperator::DeleteDir()
 
 }
 
+void FileOperator::ChangePath()
+{
+	std::cout << "\n \t ZMIANA SCIEZKI \n";
+	cout << "Dotychczasowa sciezka: \n" << directory << endl;
+	cout << "Czy chcesz ja zmienic? [T/N] ";
+	char choice;
+	cin >> choice;
+	ofstream os;
+	switch (choice)
+	{
+	case 'T':case't':
+		GetPath();
+		os.open("app.config");
+		os << directory << endl;
+		os << bundleSize << endl;
+		os << "6";//numberOfDigits
+		os.close();
+		break;
+	case 'N':case'n':
+		break;
+	}
+}
+
 std::string FileOperator::GetName(std::string fileNameWithExtension)
 {
 	size_t poz = fileNameWithExtension.find_last_of('.');
@@ -197,7 +220,6 @@ bool FileOperator::AppConfigComplete()
 }
 void FileOperator::GetPath()
 {
-	//TODO:get from cin
 	std::string path; char x;
 	struct stat info;
 	std::cout << "Podaj sciezke folderu danych : "; cin.ignore();

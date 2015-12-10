@@ -108,7 +108,7 @@ std::string User::ImportId()
 bool User::GetNewPassword()
 {
 	system("cls");
-	std::cout << "USTAL HASLO GLOWNE:\n" << std::endl;
+	std::cout << "\n\tUSTAL HASLO GLOWNE:\n" << std::endl;
 	std::string pass;
 	bool state = false;
 	while (true)
@@ -148,6 +148,61 @@ bool User::HasSetPasswd()
 	return false;
 }
 
+void User::SaveNewPasswd(std::string newPasswd)
+{
+	MainPassword = newPasswd;
+
+	//saving user passwd # to license file
+	std::ofstream of;
+	std::string line, other;
+	std::ifstream iff("license.txt");
+
+	getline(iff, line);//license id
+	other = line;
+	getline(iff, line);//license key
+	other += '\n' + line;
+	iff.close();
+
+	of.open("license.txt", std::ofstream::out);
+	of << other << std::endl;
+	std::string hash = GetSha(MainPassword);
+	of << hash;
+	of.close();
+	std::cout << "Haslo zmienione " << std::endl;
+	std::getchar();
+
+}
+
+void User::ChangePassword()
+{
+	system("cls");
+	std::cout << "\n\tZMIANA HASLA GLOWNEGO:\n" << std::endl;
+	std::string newPass, oldPass;
+	bool state = false;
+	while (true)
+	{
+		std::cout << "Podaj stare haslo: ";
+		std::cin >> oldPass;
+		if (oldPass == MainPassword)
+			break;
+	}
+	while (true)
+	{
+		std::cout << "Podaj nowe haslo glowne: ";
+		std::cin >> newPass;
+		std::cout << "Powtorz nowe haslo: ";
+		std::string pass2; std::cin >> pass2;
+		if (newPass == pass2)
+		{
+			system("cls");
+			std::cout << "Hasla zgodne.\n";
+			state = true;
+			break;
+		}
+	}
+	SaveNewPasswd(newPass);
+}
+
 void User::ClearKeyInFile()
 {
 	std::ofstream file("license.txt"); file.clear();
@@ -160,7 +215,7 @@ void User::SavePasswd(std::string mainPasswd)
 {
 	MainPassword = mainPasswd;
 
-		//saving user passwd # to license file
+	//saving user passwd # to license file
 	std::ofstream of;
 	of.open("license.txt", std::ofstream::out | std::ofstream::app); 
 	of << std::endl;

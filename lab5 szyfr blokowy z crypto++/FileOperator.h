@@ -24,6 +24,7 @@ public:
 	FileOperator();
 	~FileOperator();
 	void DeleteDir();
+	void ChangePath();
 	static std::string GetName(std::string fileNameWithExtension);
 	//std::string GetArchiveDir();
 	std::vector<std::string> fileNames;
