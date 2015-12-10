@@ -5,12 +5,12 @@
 
 FileEncrypter::FileEncrypter()
 {
-	std::cout << "FileEncrypter" << std::endl;
+	//std::cout << "FileEncrypter" << std::endl;
 	
 }
 void FileEncrypter::Encrypt()
 {
-	fileOperator.GetFileStructure();
+	fileOperator.GetFileStructure();//from file set in app.config
 	
 	Encryptor encryptor(fileOperator.totalLength, fileOperator);
 	encryptor.SplitToFiles();

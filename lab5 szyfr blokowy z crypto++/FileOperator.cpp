@@ -4,18 +4,40 @@
 
 using namespace std;
 
-FileOperator::FileOperator(string dir)
+FileOperator::FileOperator(string dir,bool archive)
 {
 	directory = dir;
 	GetFileStructure();
+
+	if (!archive)
+		SaveFileStructure("structure.txt");
 	//ListFileStructure();
 }
+
+bool FileOperator::StructureFileExists()
+{
+	struct stat info;
+	std::string fileName = "structure.txt";
+	//Deleting old files and folders
+	if (stat(fileName.c_str(), &info) == 0)//file exists
+	{
+		return true;
+	}
+	return false;
+}
+
 FileOperator::FileOperator()
 {
 	directory = "";
-	if (FirstLogon())
+	if (FirstLogon()||!StructureFileExists())
 	{
-		GetConfiguration();
+		if (!ConfigurationSet())
+			GetConfiguration();
+		else
+		{
+			LoadPath();
+			LoadBundleSize();
+		}
 		GetFileStructure();
 		//ListFileStructure();
 		SaveFileStructure("structure.txt");
@@ -70,10 +92,12 @@ void FileOperator::GetConfiguration()
 	ofstream os("app.config");
 	os << directory << endl;
 	os << bundleSize;
+	os.close();
 }
 
 void FileOperator::CreateArchiveDir()
 {
+	//clearing old archive
 	string archiveDir;
 	string dd = this->directory;
 	size_t poz = dd.find_last_of("\\");
@@ -84,9 +108,9 @@ void FileOperator::CreateArchiveDir()
 	system(clearDirCommand.c_str());
 	archiveDir += "\"";
 	string deleteCommand = "rmdir /Q " + archiveDir;
-
 	system(deleteCommand.c_str());
 
+	//creating new archive
 	string command = "mkdir " + archiveDir;
 
 	system(command.c_str());
@@ -96,10 +120,35 @@ FileOperator::~FileOperator()
 {
 }
 
-std::string FileOperator::GetExtension(std::string fileNameWithExtension)
+void FileOperator::DeleteDir()
 {
-	size_t poz = fileNameWithExtension.find_last_of('.');
-	return fileNameWithExtension.substr(poz);
+	ListFileStructure();
+	if (fileNames.size() > 0)
+	{
+		for (int i = 0; i < fileNames.size(); i++)//deleting files in all folders
+		{
+			if (fileTypes[fileNames[i]] == "DT_REG")
+			{
+				std::string path = "\"" + directory + "\\" + fileNames[i] + "\"";
+				std::string command = "del " + path;
+				system(command.c_str());
+			}
+		}
+		for (int i = 0; i < fileNames.size(); i++)
+		{
+			int j = fileNames.size() - i - 1;
+			if (fileTypes[fileNames[j]] == "DT_DIR")
+			{
+				std::string path = "\"" + directory + "\\" + fileNames[j] + "\"";
+				std::string command = "rmdir \q " + path;
+				system(command.c_str());
+			}
+		}
+	}
+	std::string path = "\"" + directory + "\"";
+	std::string command = "rmdir \q " + path;
+	system(command.c_str());
+
 }
 
 std::string FileOperator::GetName(std::string fileNameWithExtension)
@@ -127,8 +176,6 @@ std::string FileOperator::GetTotalContent()
 	{
 		std::string content=ArchiveLoader::FileContent(directory+"\\"+fileNames[i]);
 		total+=content;
-		std::cout << "file " + fileNames[i] + " content" << std::endl;
-		std::cout << content << std::endl;
 	}
 	return total;
 }
@@ -163,9 +210,17 @@ bool FileOperator::FirstLogon()
 void FileOperator::GetPath()
 {
 	//TODO:get from cin
-	directory = "E:\\Studia\\Informatyka\\semestr VII\\oprogramowanie kryptograficzne\\projekt\\DANE";
-	ofstream os("app.config");
-	os << directory << endl;
+	std::string path; char x;
+	struct stat info;
+	std::cout << "Podaj sciezke folderu danych : "; cin.ignore();
+	getline(cin, path);
+	//Deleting old files and folders
+	while (stat(path.c_str(), &info) != 0)
+	{	
+		std::cout << "Podaj poprawna sciezke folderu danych: "; cin.ignore();
+		getline(cin, path);
+	}
+	directory = path;
 
 }
 
@@ -181,7 +236,7 @@ void FileOperator::GetFileStructure()
 		cout << "Error(" << errno << ") opening " << directory << endl;
 		//return errno;
 	}
-
+	cout << "dir:" << directory << endl;
 	while ((dirp = readdir(dp)) != NULL) 
 	{
 		string name = dirp->d_name;
@@ -215,7 +270,6 @@ void FileOperator::GetFileStructure()
 		}
 	}
 	closedir(dp);
-	SaveFileStructure("structure.txt");
 }
 void FileOperator::GetFileStructure(std::string pathDir)
 {
@@ -228,7 +282,7 @@ void FileOperator::GetFileStructure(std::string pathDir)
 		cout << "Error(" << errno << ") opening " << pathDir << endl;
 		//return errno;
 	}
-	string partialPath = pathDir.substr(directory.length()+1, partialPath.length())+'\\';//czêœæ œcie¿ki po œcie¿ce folderu z danymi
+	string partialPath = pathDir.substr(directory.length()+1, partialPath.length());//czêœæ œcie¿ki po œcie¿ce folderu z danymi
 	while ((dirp = readdir(dp)) != NULL)
 	{
 		string name = dirp->d_name; 
@@ -268,13 +322,20 @@ void FileOperator::ListFileStructure()
 	system("cls");
 	GetFileStructure();
 	cout << "\n\n\tSTRUKTURA:" << endl;
-	for (int i = 0; i < fileNames.size(); i++)
+	if (fileNames.size() > 0)
 	{
-		int depth = calculateDepth(fileNames[i]);
-		for (int j = 0; j < depth; j++)
-			cout << "   ";
+		for (int i = 0; i < fileNames.size(); i++)
+		{
+			int depth = calculateDepth(fileNames[i]);
+			for (int j = 0; j < depth; j++)
+				cout << "   ";
 
-		cout << fileNames[i] << endl;
+			cout << fileNames[i] << endl;
+		}
+	}
+	else
+	{
+		cout << "Brak plikow" << endl;
 	}
 
 }
@@ -357,6 +418,30 @@ void FileOperator::LoadBundleSize()
 	}
 
 }
+
+bool FileOperator::ConfigurationSet()
+{
+	struct stat info;
+	std::string fileName = "app.config";
+	//Deleting old files and folders
+	if (stat(fileName.c_str(), &info) == 0)//file exists
+	{
+		std::string line;
+		int counter = 0;
+		ifstream iss("app.config");
+		while (!iss.eof())
+		{
+			getline(iss, line);
+			counter++;
+		}	
+		iss.close();
+		if (counter == 2)
+			return true;
+	}
+	return false;
+
+}
+
 void FileOperator::LoadFileStructure(std::string fileName)
 {
 	ifstream is("structure.txt");		//name type size

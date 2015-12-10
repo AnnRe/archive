@@ -18,10 +18,11 @@ public:
 	void LoadConfigurationAndStructure();
 	void GetTotalLength();
 	void GetConfiguration();
-	FileOperator(std::string dir);
+	FileOperator(std::string dir,bool archive=false);
+	bool StructureFileExists();
 	FileOperator();
 	~FileOperator();
-	static std::string GetExtension(std::string fileNameWithExtension);
+	void DeleteDir();
 	static std::string GetName(std::string fileNameWithExtension);
 	//std::string GetArchiveDir();
 	std::vector<std::string> fileNames;
@@ -39,6 +40,7 @@ public:
 	std::string directory;
 	int numberOfDigits;
 	std::string FilesText;
+	void LoadFileStructure(std::string fileName);
 
 private:
 	int bundleSize;
@@ -54,7 +56,7 @@ private:
 
 	void LoadPath();
 	void LoadBundleSize();
-	void LoadFileStructure(std::string fileName);
+	bool ConfigurationSet();
 
 
 

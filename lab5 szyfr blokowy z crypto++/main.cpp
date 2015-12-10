@@ -1,37 +1,18 @@
 // C Runtime Includes
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <cstdlib>
 #include <string>
-#include "ID.h"
 #include "User.h"
-#include "FileOperator.h"
 
 // Includes all required Crypto++
 // Block Cipher Headers
-#include "SymmetricCipher.h"
 #include "md5.h"
-#include"aes.h"
 // AutoSeededRandomPool
-#include "osrng.h"
 
 // Crypto++ Includes
-#include "modes.h" // xxx_Mode< >
-#include "filters.h" // StringSource and
-#include "integer.h"
 #include "FileEncrypter.h"
 // StreamTransformation
 
-// Cipher Modes
-//
-// #define CIPHER_MODE CBC_CTS_Mode
-#define CIPHER_MODE CBC_Mode
-// #define CIPHER_MODE CFB_FIPS_Mode
-// #define CIPHER_MODE CFB_Mode
-// #define CIPHER_MODE CTR_Mode
-// #define CIPHER_MODE ECB_Mode
-// #define CIPHER_MODE OFB_Mode
 
 // Ciphers
 //

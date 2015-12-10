@@ -36,7 +36,7 @@ void Encryptor::Run()
 		//block ^G
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
-			//blockText[j] -= crypto.G[j];
+			blockText[j] -= crypto.G[j];
 		}
 
 		byte cipherData[AES::BLOCKSIZE];
@@ -55,15 +55,13 @@ void Encryptor::Run()
 		//H1 xor AES output
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
-			//cipherData[j] +=crypto.H[j];
+			cipherData[j] +=crypto.H[j];
 		}
 
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 			cipherText.push_back((unsigned)cipherData[j]);
 
 	}
-	string x = cipherText;
-	cout << "ciphertext:\n" << cipherText << endl;
 	cout << "----Koniec szyfrowania...\n wyjsciowy tekst ma dl:"<<cipherText.length()<<endl;
 
 }
@@ -94,7 +92,7 @@ Encryptor::Encryptor(int totalLength, FileOperator _fileOperator)
 	try
 	{
 		// Message M
-		PlainText = fileOperator.GetTotalContent();//"Alla ma kota, a kot ma Alee i cos jeszcze tam dalej jeden dwa i w koñcu trzy.";
+		PlainText = fileOperator.GetTotalContent();
 		string x = PlainText;
 		Initialize();
 		Run();

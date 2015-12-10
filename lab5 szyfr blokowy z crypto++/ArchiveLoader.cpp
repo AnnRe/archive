@@ -8,7 +8,7 @@ ArchiveLoader::ArchiveLoader()
 ArchiveLoader::ArchiveLoader(std::string dir)
 {
 	GetArchiveDir(dir);
-	FileOperator fop(archiveDir);
+	FileOperator fop(archiveDir,true);
 	archiveFileOperator = fop;
 }
 
