@@ -9,6 +9,7 @@ void Encryptor::Run()
 
 	crypto.GetFirstG();
 	cout << "----SZYFROWANIE...\n";
+	cout << "---\n *************** \n"<<cipherText <<"\n *************** \n"<< endl;
 	for (int i = 0; i < PlainText.size(); i+=AES::BLOCKSIZE)//rozbicie na bloki
 	{
 		string BlockCipherText;
@@ -42,9 +43,13 @@ void Encryptor::Run()
 		byte cipherData[AES::BLOCKSIZE];
 
 		//AES Encryption
-		AES::Encryption alg1;
+		/*AES::Encryption alg1;
 		alg1.SetKey((byte*)key.c_str(), 32);
-		alg1.ProcessBlock(blockText, cipherData);
+		alg1.ProcessBlock(blockText, cipherData);*/
+		for (int j = 0; j < AES::BLOCKSIZE; j++)
+		{
+			cipherData[j] = blockText[j];
+		}
 		// Encryptor
 		
 		for (int k = 0; k < AES::BLOCKSIZE; k++)
@@ -55,7 +60,7 @@ void Encryptor::Run()
 		//H1 xor AES output
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
-			cipherData[j] +=crypto.H[j];
+			//cipherData[j] +=crypto.H[j];
 		}
 
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
@@ -63,6 +68,7 @@ void Encryptor::Run()
 
 	}
 	cout << "----Koniec szyfrowania...\n wyjsciowy tekst ma dl:"<<cipherText.length()<<endl;
+	cout << cipherText << endl;
 
 }
 

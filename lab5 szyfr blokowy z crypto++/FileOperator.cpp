@@ -26,29 +26,25 @@ bool FileOperator::StructureFileExists()
 	return false;
 }
 
+void FileOperator::LoadConfiguration()
+{
+	LoadPath();
+	LoadBundleSize();
+	LoadSizeStringSize();
+}
+
 FileOperator::FileOperator()
 {
-	directory = "";
-	if (FirstLogon()||!StructureFileExists())
+	if (!AppConfigComplete())
 	{
-		if (!ConfigurationSet())
-			GetConfiguration();
-		else
-		{
-			LoadPath();
-			LoadBundleSize();
-		}
-		GetFileStructure();
-		//ListFileStructure();
-		SaveFileStructure("structure.txt");
-		GetTotalLength();
+		GetConfiguration();
 	}
 	else
 	{
-		LoadConfigurationAndStructure();
-		//ListFileStructure();
-		GetTotalLength();
+		LoadConfiguration();
 	}
+	GetFileStructure();
+	SaveFileStructure("structure.txt");
 }
 
 void FileOperator::LoadSizeStringSize()//druga linia pliku appConfig
@@ -83,7 +79,6 @@ void FileOperator::GetTotalLength()
 	}
 	//cout << "total length:" << totalLength << endl;
 }
-
 void FileOperator::GetConfiguration()
 {
 	GetPath();
@@ -91,10 +86,10 @@ void FileOperator::GetConfiguration()
 
 	ofstream os("app.config");
 	os << directory << endl;
-	os << bundleSize;
+	os << bundleSize<<endl;
+	os << "6";//numberOfDigits
 	os.close();
 }
-
 void FileOperator::CreateArchiveDir()
 {
 	//clearing old archive
@@ -115,14 +110,11 @@ void FileOperator::CreateArchiveDir()
 
 	system(command.c_str());
 }
-
 FileOperator::~FileOperator()
 {
 }
-
 void FileOperator::DeleteDir()
 {
-	ListFileStructure();
 	if (fileNames.size() > 0)
 	{
 		for (int i = 0; i < fileNames.size(); i++)//deleting files in all folders
@@ -139,14 +131,16 @@ void FileOperator::DeleteDir()
 			int j = fileNames.size() - i - 1;
 			if (fileTypes[fileNames[j]] == "DT_DIR")
 			{
-				std::string path = "\"" + directory + "\\" + fileNames[j] + "\"";
-				std::string command = "rmdir \q " + path;
+				string path = "\"" + directory + "\\" + fileNames[j] + "\"";
+				string command = "rmdir /q " + path;
+				cout << path << "   " << command << std:: endl;
+
 				system(command.c_str());
 			}
 		}
 	}
 	std::string path = "\"" + directory + "\"";
-	std::string command = "rmdir \q " + path;
+	std::string command = "rmdir /q " + path;
 	system(command.c_str());
 
 }
@@ -157,7 +151,6 @@ std::string FileOperator::GetName(std::string fileNameWithExtension)
 	std::string toReturn = fileNameWithExtension.substr(0, poz);
 	return toReturn;
 }
-
 std::string FileOperator::GetArchiveDir() const
 {
 	string dir;
@@ -166,8 +159,6 @@ std::string FileOperator::GetArchiveDir() const
 	dir += "archive"; 
 	return dir;
 }
-
-
 std::string FileOperator::GetTotalContent()
 {
 	std::string total="";
@@ -179,7 +170,6 @@ std::string FileOperator::GetTotalContent()
 	}
 	return total;
 }
-
 int FileOperator::NumberOfFiles()
 {
 	int n = 0;
@@ -188,13 +178,11 @@ int FileOperator::NumberOfFiles()
 		n++;
 	return n;
 }
-
 int FileOperator::BundleSize()
 {
 	return bundleSize;
 }
-
-bool FileOperator::FirstLogon()
+bool FileOperator::AppConfigComplete()
 {
 	ifstream conf("app.config");
 	int n = 0;
@@ -205,7 +193,7 @@ bool FileOperator::FirstLogon()
 		n++;
 	}
 	conf.close();
-	return n<1;
+	return n==3;
 }
 void FileOperator::GetPath()
 {
@@ -223,10 +211,9 @@ void FileOperator::GetPath()
 	directory = path;
 
 }
-
-void FileOperator::GetFileStructure()
+void FileOperator::GetFileStructure(bool withSaving)
 {
-	fileNames.clear();
+	fileNames.clear(); fileTypes.clear(); fileSizes.clear();
 	DIR *dp;
 	FILE *fp;
 	int i = 0;
@@ -270,6 +257,8 @@ void FileOperator::GetFileStructure()
 		}
 	}
 	closedir(dp);
+	if (withSaving)
+		SaveFileStructure();
 }
 void FileOperator::GetFileStructure(std::string pathDir)
 {
@@ -318,15 +307,13 @@ void FileOperator::GetFileStructure(std::string pathDir)
 }
 void FileOperator::ListFileStructure()
 {
-	//LoadConfigurationAndStructure();
 	system("cls");
-	GetFileStructure();
 	cout << "\n\n\tSTRUKTURA:" << endl;
 	if (fileNames.size() > 0)
 	{
 		for (int i = 0; i < fileNames.size(); i++)
 		{
-			int depth = calculateDepth(fileNames[i]);
+			int depth = CalculateDepth(fileNames[i]);
 			for (int j = 0; j < depth; j++)
 				cout << "   ";
 
@@ -342,20 +329,20 @@ void FileOperator::ListFileStructure()
 
 int FileOperator::CountChars(string path)
 {
-	ifstream file(path);
-	int n = 0;
-	while (!file.eof())
-	{
-		file.get();
-		n++;
-	}
+	ifstream file(path,ios_base::binary);
+
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	std::string x = buffer.str();
+	std::string content=buffer.str();
+
 	file.close();
-	return n;
+	return content.size();
 
 }
-
 void FileOperator::SaveFileStructure(std::string fileName)
 {
+	cout << "Zapis!\n";
 	ofstream os(fileName);
 
 	for (int i = 0; i < fileNames.size(); i++)
@@ -368,8 +355,7 @@ void FileOperator::SaveFileStructure(std::string fileName)
 	os.close();
 
 }
-
-int FileOperator::calculateDepth(std::string filePath)
+int FileOperator::CalculateDepth(std::string filePath)
 {
 	int depth = 0;
 	for (int i = 0; i < filePath.length(); i++)
@@ -377,12 +363,13 @@ int FileOperator::calculateDepth(std::string filePath)
 		depth++;
 	return depth;
 }
-
 void FileOperator::GetBundleSize()
 {
 	cout << "Podaj wielkosc paczek (B): ";//TODO:validation
 	cin>>bundleSize;
 }
+
+//Loading from app.config
 void FileOperator::LoadPath()
 {
 	try
@@ -441,9 +428,9 @@ bool FileOperator::ConfigurationSet()
 	return false;
 
 }
-
 void FileOperator::LoadFileStructure(std::string fileName)
 {
+	fileNames.clear(); fileTypes.clear(); fileSizes.clear();
 	ifstream is("structure.txt");		//name type size
 	while (!is.eof())
 	{

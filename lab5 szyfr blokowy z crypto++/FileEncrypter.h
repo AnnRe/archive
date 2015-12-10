@@ -9,6 +9,7 @@ public:
 	void Decrypt();
 	void PrintStructure();
 	~FileEncrypter();
+	void Refresh();
 	static void PrintMenu();
 private:
 	FileOperator fileOperator;

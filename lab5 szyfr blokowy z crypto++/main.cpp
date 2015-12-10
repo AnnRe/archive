@@ -100,7 +100,10 @@ int main(int argc, char* argv[]) {
 						encrypter.Decrypt();
 						//system("cls");
 						break;
-
+				case 'O':case'o':
+					encrypter.Refresh();
+					//system("cls");
+					break;
 				default:
 					run = false;
 				}

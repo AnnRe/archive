@@ -7,8 +7,7 @@
 using namespace CryptoPP;
 Decryptor::Decryptor(FileOperator _fileOperator)
 {
-	ArchiveLoader _archiveLoader(_fileOperator.directory);
-	archiveLoader = _archiveLoader;
+	archiveLoader = ArchiveLoader(_fileOperator.directory);
 	dataFileOperator = _fileOperator;
 }
 
@@ -18,6 +17,7 @@ Decryptor::~Decryptor()
 
 void Decryptor::Decrypt()//TODO:key!
 {
+	std::cout << cipherText << std::endl;
 	byte previousEncryptedTextBlock[AES::BLOCKSIZE];
 	crypto.GetFirstG();
 	std::string decryptedText = "";
@@ -40,18 +40,20 @@ void Decryptor::Decrypt()//TODO:key!
 		
 		for (int j = 0; j < AES::BLOCKSIZE; j++) //H xor textblock
 		{
-			encryptedTextBlock[j] -= crypto.H[j];
+			//encryptedTextBlock[j] -= crypto.H[j];
 			previousEncryptedTextBlock[j] = (unsigned)encryptedTextBlock[j];
 		}
 		//g1
 		crypto.GetNextG(previousEncryptedTextBlock);
 		// Decryption AES
-		AES::Decryption alg2;
+		/*AES::Decryption alg2;
 		alg2.SetKey((byte*)key.c_str(), 32);
-		alg2.ProcessBlock(encryptedTextBlock, decryptedTextBlock);
+		alg2.ProcessBlock(encryptedTextBlock, decryptedTextBlock);*/
+		for (int j = 0; j < AES::BLOCKSIZE;j++)
+			decryptedTextBlock[j] = encryptedTextBlock[j];
 
 		//block ^G
-		for (int j = 0; j < AES::BLOCKSIZE; j++)
+		for (int j = 0; j < AES::BLOCKSIZE; j++)s
 		{
 			decryptedTextBlock[j] +=crypto.Gprevious[j];
 		}
@@ -60,15 +62,16 @@ void Decryptor::Decrypt()//TODO:key!
 			decryptedText.push_back(decryptedTextBlock[k]);
 	}
 	dataFileOperator.FilesText = decryptedText;
+	std::cout << decryptedText << std::endl;
 }
-void Decryptor::SaveToFiles()
+void Decryptor::SaveToFiles()//TODO:check unix/windows/mac
 {
 	struct stat info;
 	std::string folderName = dataFileOperator.directory + "-backup";
 	//Deleting old files and folders
 	if (stat(folderName.c_str(), &info) == 0)
 	{
-		FileOperator fop(dataFileOperator.directory + "-backup");
+		FileOperator fop(dataFileOperator.directory + "-backup",true);
 		fop.DeleteDir();
 	}
 
@@ -81,7 +84,6 @@ void Decryptor::SaveToFiles()
 	int wsk = 0;
 	std::string d = dataFileOperator.directory;
 	std::cout << "dir:" << d << std::endl;
-	dataFileOperator.LoadFileStructure("structure.txt");
 	for (int i = 0; i < dataFileOperator.fileNames.size();i++)
 	if (dataFileOperator.fileTypes[dataFileOperator.fileNames[i]] == "DT_REG")
 	{
@@ -95,9 +97,8 @@ void Decryptor::SaveToFiles()
 		//saving tt txt file
 		std::string nameWithoutExtension = FileOperator::GetName(dataFileOperator.fileNames[i]);
 		std::string nametxt = nameWithoutExtension + ".txt";
-		std::ofstream ofs(dataFileOperator.directory + "-backup\\" + nametxt);
 
-		//std::ofstream ofs(dataFileOperator.directory + "-backup\\" + dataFileOperator.fileNames[i]);
+		std::ofstream ofs(dataFileOperator.directory + "-backup\\" + nametxt);
 		ofs << fileContent;
 		ofs.close();
 
@@ -151,6 +152,7 @@ void Decryptor::LoadEncryptedFile()//Joins all blocks to one
 	int n=archiveLoader.GetNumberOfFiles();
 	CipherText = archiveLoader.GetFilesContent(n);
 	size_t poz = dataFileOperator.numberOfDigits + CryptoPP::AES::BLOCKSIZE;
-	cipherText = CipherText.substr(poz);
+	cipherText = CipherText.substr(poz+2);
+	std::cout << "====\n" << cipherText << "====\n" << std::endl;
 }
 

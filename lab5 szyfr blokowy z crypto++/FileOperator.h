@@ -20,6 +20,7 @@ public:
 	void GetConfiguration();
 	FileOperator(std::string dir,bool archive=false);
 	bool StructureFileExists();
+	void LoadConfiguration();
 	FileOperator();
 	~FileOperator();
 	void DeleteDir();
@@ -35,7 +36,7 @@ public:
 	int BundleSize();
 	std::string GetArchiveDir() const;
 	void CreateArchiveDir();
-	void GetFileStructure();
+	void GetFileStructure(bool withSavingStructure=false);
 	void ListFileStructure();
 	std::string directory;
 	int numberOfDigits;
@@ -45,13 +46,13 @@ public:
 private:
 	int bundleSize;
 
-	bool FirstLogon();
+	bool AppConfigComplete();
 	void GetPath();
 	void GetFileStructure(std::string path);
 	static int CountChars(std::string path);
-	void SaveFileStructure(std::string fileName);
+	void SaveFileStructure(std::string fileName = "structure.txt");
 
-	int calculateDepth(std::string filePath);//liczy jak bardzo zagnie¿d¿ony jest katalog
+	int CalculateDepth(std::string filePath);//liczy jak bardzo zagnie¿d¿ony jest katalog
 	void GetBundleSize();
 
 	void LoadPath();

@@ -10,8 +10,6 @@ FileEncrypter::FileEncrypter()
 }
 void FileEncrypter::Encrypt()
 {
-	fileOperator.GetFileStructure();//from file set in app.config
-	
 	Encryptor encryptor(fileOperator.totalLength, fileOperator);
 	encryptor.SplitToFiles();
 	//encryptor.PrintModifiedFiles();
@@ -29,13 +27,19 @@ void FileEncrypter::PrintStructure()
 
 void FileEncrypter::PrintMenu()
 {
-	std::cout << "\n\n";
+	std::cout << "\n\n------------------------------------------------\n";
 	std::cout << "\tMENU:" << std::endl;
 	std::cout << "\t\t (P) - struktura plikow" << std::endl;
 	std::cout << "\t\t (S) - szyfrowanie plikow" << std::endl;
 	std::cout << "\t\t (D) - deszyfrowanie plikow" << std::endl;
+	std::cout << "\t\t (O) - odswiezenie listy plikow" << std::endl;
 	//std::cout << "\t (Z) - Lista zmienionych plikow" << std::endl;
-	std::cout << std::endl;
+	std::cout << "------------------------------------------------\n" << std::endl;
+}
+
+void FileEncrypter::Refresh()
+{
+	fileOperator.GetFileStructure(true);
 }
 
 FileEncrypter::~FileEncrypter()
