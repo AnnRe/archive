@@ -30,7 +30,7 @@ class Encryptor
 {
 public:
 	void PrintModifiedFiles();
-	Encryptor(int totalLength,FileOperator _fileOperator);
+	Encryptor(int totalLength,FileOperator _fileOperator,std::string pass);
 	~Encryptor();
 	static std::string int_to_string(int value, int length);
 	void SplitToFiles();
@@ -43,7 +43,7 @@ private:
 
 	CryptoPP::AutoSeededRandomPool prng;
 	
-	void Run();
+	void Run(std::string key);
 	void Initialize();
 
 	std::vector<std::string> modifiedFiles;

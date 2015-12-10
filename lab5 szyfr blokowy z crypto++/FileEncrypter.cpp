@@ -5,19 +5,18 @@
 
 FileEncrypter::FileEncrypter()
 {
-	//std::cout << "FileEncrypter" << std::endl;
-	
 }
 void FileEncrypter::Encrypt()
 {
-	Encryptor encryptor(fileOperator.totalLength, fileOperator);
+	Encryptor encryptor(fileOperator.totalLength, fileOperator, pass);
+
 	encryptor.SplitToFiles();
 	//encryptor.PrintModifiedFiles();
 }
 void FileEncrypter::Decrypt()
 {
 	Decryptor decryptor(fileOperator);
-	decryptor.Run();
+	decryptor.Run(pass);
 }
 
 void FileEncrypter::PrintStructure()
@@ -49,6 +48,14 @@ void FileEncrypter::Refresh()
 void FileEncrypter::ChangePath()
 {
 	fileOperator.ChangePath();
+}
+
+void FileEncrypter::GetPass(std::string _userPass)
+{
+	/*CryptoPP::StringSource ss("28292A2B2D2E2F30323334353738393A3C3D3E3F41424344464748494B4C4D4E", true,
+		new CryptoPP::HexDecoder(
+		new CryptoPP::StringSink(pass)));*/
+	pass = _userPass;
 }
 
 FileEncrypter::~FileEncrypter()

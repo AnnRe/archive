@@ -9,9 +9,9 @@ class Decryptor
 public:
 	Decryptor(FileOperator _fileOperator);
 	~Decryptor();
-	void Decrypt();
+	void Decrypt(std::string key);
 	void SaveToFiles();
-	void Run();
+	void Run(std::string key);
 	
 private:
 	int fileSize;

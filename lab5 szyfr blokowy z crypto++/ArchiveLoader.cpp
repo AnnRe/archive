@@ -3,7 +3,8 @@
 #include "FileOperator.h"
 
 ArchiveLoader::ArchiveLoader()
-{}
+{
+}
 
 ArchiveLoader::ArchiveLoader(std::string dir)
 {

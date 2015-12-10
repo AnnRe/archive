@@ -117,8 +117,8 @@ void FileOperator::DeleteDir()
 		{
 			if (fileTypes[fileNames[i]] == "DT_REG")
 			{
-				std::string path = "\"" + directory + "\\" + fileNames[i] + "\"";
-				std::string command = "del " + path;
+				string path = "\"" + directory + "\\" + fileNames[i] + "\"";
+				string command = "del /q /f  " + path;
 				system(command.c_str());
 			}
 		}

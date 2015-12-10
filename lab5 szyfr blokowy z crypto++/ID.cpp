@@ -140,15 +140,8 @@ std::string ID::GenerateId()
 std::string ID::GetIDPart1(std::string MAChash,std::string MAC)//******
 {
 	std::string key = "";
-	//std::cout << MAC <<"  :"<<MAC.length()<< "\n";
-	//std::cout << MAChash << "  :" << MAChash.length() << "\n";
-
-	//std::cout << (unsigned int)(MAC[0]) << std::endl;
 	for (int i = 0; i < 6; i++) //co 4-ty znak #MAC ^ co 3-ci znak MAC licz¹c od 2
 	{							// ASCII 48-57, 65-90, 97-122
-		char sign = MAChash[i * 3];
-		//std::cout << "M: " << MAC[i * 3 + 1] << "(" << (int)(unsigned char)MAC[i * 3 + 1] << ") M#: " << MAChash[i * 4] << "(" << (int)(unsigned char)MAChash[i * 4]<<")"<< std::endl;
-		sign ^= MAC[i * 3 + 1];
 		key.push_back(Letter(MAC[i * 3 + 1], MAChash[i * 3]));
 	}
 

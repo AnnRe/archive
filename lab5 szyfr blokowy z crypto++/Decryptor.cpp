@@ -15,23 +15,19 @@ Decryptor::~Decryptor()
 {
 }
 
-void Decryptor::Decrypt()//TODO:key!
+void Decryptor::Decrypt(std::string key)
 {
 	byte previousEncryptedTextBlock[AES::BLOCKSIZE];
 	crypto.GetFirstG();
 	std::string decryptedText = "";
-	std::cout << "----DESZYFROWANIE...\n Wejsciowy tekst ma dlugosc: " << cipherText.length() << std::endl;
+	std::cout << "----DESZYFROWANIE... ";
 	
 	for (int i = 0; i < cipherText.length(); i += AES::BLOCKSIZE)
 	{
 		crypto.GetNextAESkey();
 		crypto.GetNextH();
 		//Decryptor
-		std::string key;
-		StringSource ss("28292A2B2D2E2F30323334353738393A3C3D3E3F41424344464748494B4C4D4E", true,
-			new HexDecoder(
-			new StringSink(key)));
-		
+				
 		byte encryptedTextBlock[AES::BLOCKSIZE]; byte decryptedTextBlock[AES::BLOCKSIZE];
 		std::string x = cipherText;
 		for (int l = i; l < i+AES::BLOCKSIZE; l++)
@@ -45,9 +41,9 @@ void Decryptor::Decrypt()//TODO:key!
 		//g1
 		crypto.GetNextG(previousEncryptedTextBlock);
 		// Decryption AES
-		/*AES::Decryption alg2;
+		AES::Decryption alg2;
 		alg2.SetKey((byte*)key.c_str(), 32);
-		alg2.ProcessBlock(encryptedTextBlock, decryptedTextBlock);*/
+		alg2.ProcessBlock(encryptedTextBlock, decryptedTextBlock);
 		for (int j = 0; j < AES::BLOCKSIZE;j++)
 			decryptedTextBlock[j] = encryptedTextBlock[j];
 
@@ -74,7 +70,7 @@ void Decryptor::SaveToFiles()//TODO:check unix/windows/mac
 	}
 
 	//making new folder
-	std::string comma = "mkdir  \"";
+	std::string comma = "mkdir /q \"";
 	std::string dirPath = dataFileOperator.directory + "-backup\""; comma += dirPath;
 	system(comma.c_str());
 
@@ -113,11 +109,11 @@ void Decryptor::SaveToFiles()//TODO:check unix/windows/mac
 	}
 }
 
-void Decryptor::Run()
+void Decryptor::Run(std::string key)
 {
 	LoadConfiguration();
 	LoadEncryptedFile();
-	Decrypt();
+	Decrypt(key);
 	SaveToFiles();
 }
 

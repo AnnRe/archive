@@ -78,6 +78,7 @@ int main(int argc, char* argv[]) {
 			cout << "Logowanie pomyœlne"<<endl;
 			
 			FileEncrypter encrypter;
+			encrypter.GetPass(user.MainPassword);
 			bool run = true; system("cls");
 			while (run)
 			{
@@ -92,7 +93,7 @@ int main(int argc, char* argv[]) {
 				case 'S':case's':
 					encrypter.Encrypt();
 					getchar();
-					//system("cls");
+					system("cls");
 
 					break; 
 				case 'D':case'd':

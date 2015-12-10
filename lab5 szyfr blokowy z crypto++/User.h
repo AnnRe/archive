@@ -26,13 +26,14 @@ public:
 	void GetPassword();//gets main password do app
 	bool MainPasswordCorrect();
 	std::string GetSha(std::string passwd);
+	std::string MainPassword;
+
 private:
 	bool hasLicense;
 	std::string mainPasswordHash;
 	std::string _licenseKey;
 	ID id;
 	void CheckLicenseState();
-	std::string MainPassword;
 
 
 };

@@ -3,12 +3,12 @@
 using namespace CryptoPP;
 using namespace std;
 
-void Encryptor::Run()
+void Encryptor::Run(std::string key)
 {
 	// Cipher Text
 
 	crypto.GetFirstG();
-	cout << "----SZYFROWANIE...\n";
+	cout << "----SZYFROWANIE...";
 	for (int i = 0; i < PlainText.size(); i+=AES::BLOCKSIZE)//rozbicie na bloki
 	{
 		string BlockCipherText;
@@ -29,10 +29,6 @@ void Encryptor::Run()
 			}
 		}
 		
-		string key;
-		StringSource ss("28292A2B2D2E2F30323334353738393A3C3D3E3F41424344464748494B4C4D4E", true,
-			new HexDecoder(
-			new StringSink(key)));
 		//block ^G
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
@@ -42,9 +38,9 @@ void Encryptor::Run()
 		byte cipherData[AES::BLOCKSIZE];
 
 		//AES Encryption
-		/*AES::Encryption alg1;
+		AES::Encryption alg1;
 		alg1.SetKey((byte*)key.c_str(), 32);
-		alg1.ProcessBlock(blockText, cipherData);*/
+		alg1.ProcessBlock(blockText, cipherData);
 		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
 			cipherData[j] = blockText[j];
@@ -66,7 +62,6 @@ void Encryptor::Run()
 			cipherText.push_back((unsigned)cipherData[j]);
 
 	}
-	cout << "----Koniec szyfrowania...\n wyjsciowy tekst ma dl:"<<cipherText.length()<<endl;
 
 }
 
@@ -90,7 +85,7 @@ void Encryptor::PrintModifiedFiles()
 		cout << modifiedFiles[i] << endl;
 }
 
-Encryptor::Encryptor(int totalLength, FileOperator _fileOperator)
+Encryptor::Encryptor(int totalLength, FileOperator _fileOperator,std::string key)
 {
 	fileOperator = _fileOperator;
 	try
@@ -99,7 +94,7 @@ Encryptor::Encryptor(int totalLength, FileOperator _fileOperator)
 		PlainText = fileOperator.GetTotalContent();
 		string x = PlainText;
 		Initialize();
-		Run();
+		Run(key);
 	}
 	catch (Exception& e)
 	{
@@ -127,7 +122,6 @@ string Encryptor::int_to_string(int value, int length)
 
 void Encryptor::SplitToFiles()
 {
-	cout << "Splitting to files ... " << endl;
 	int bundleSize = fileOperator.BundleSize();
 	int bundleNumber = 1;
 	fileOperator.CreateArchiveDir();
