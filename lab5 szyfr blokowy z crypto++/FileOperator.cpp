@@ -11,7 +11,6 @@ FileOperator::FileOperator(string dir,bool archive)
 
 	if (!archive)
 		SaveFileStructure("structure.txt");
-	//ListFileStructure();
 }
 
 bool FileOperator::StructureFileExists()
@@ -73,11 +72,9 @@ void FileOperator::GetTotalLength()
 	totalLength = 0;
 	for (int i = 0; i < fileNames.size(); i++)
 	{
-		//cout << "+" << fileNames[i] << "(" << fileSizes[fileNames[i]] << ")\n";
 		if (fileSizes[fileNames[i]]>0)
 			totalLength += fileSizes[fileNames[i]];
 	}
-	//cout << "total length:" << totalLength << endl;
 }
 void FileOperator::GetConfiguration()
 {
@@ -98,7 +95,6 @@ void FileOperator::CreateArchiveDir()
 	size_t poz = dd.find_last_of("\\");
 	archiveDir ="\""+ dd.substr(0, poz + 1);
 	archiveDir += "archive"; 
-	//cout << "Creating archive\n";
 	string clearDirCommand = "del /Q " + archiveDir + "\\*\"";
 	system(clearDirCommand.c_str());
 	archiveDir += "\"";
@@ -133,7 +129,6 @@ void FileOperator::DeleteDir()
 			{
 				string path = "\"" + directory + "\\" + fileNames[j] + "\"";
 				string command = "rmdir /q " + path;
-				cout << path << "   " << command << std:: endl;
 
 				system(command.c_str());
 			}
@@ -220,14 +215,14 @@ bool FileOperator::AppConfigComplete()
 }
 void FileOperator::GetPath()
 {
-	std::string path; char x;
+	std::string path;
 	struct stat info;
-	std::cout << "Podaj sciezke folderu danych : "; cin.ignore();
+	std::cout << "\nPodaj sciezke folderu danych : "; cin.ignore();
 	getline(cin, path);
 	//Deleting old files and folders
 	while (stat(path.c_str(), &info) != 0)
 	{	
-		std::cout << "Podaj poprawna sciezke folderu danych: "; cin.ignore();
+		std::cout << "\nPodaj poprawna sciezke folderu danych: "; cin.ignore();
 		getline(cin, path);
 	}
 	directory = path;
@@ -237,15 +232,12 @@ void FileOperator::GetFileStructure(bool withSaving)
 {
 	fileNames.clear(); fileTypes.clear(); fileSizes.clear();
 	DIR *dp;
-	FILE *fp;
-	int i = 0;
 	struct dirent *dirp;
 	if ((dp = opendir(directory.c_str())) == NULL) 
 	{
 		cout << "Error(" << errno << ") opening " << directory << endl;
 		//return errno;
 	}
-	cout << "dir:" << directory << endl;
 	while ((dirp = readdir(dp)) != NULL) 
 	{
 		string name = dirp->d_name;
@@ -256,14 +248,11 @@ void FileOperator::GetFileStructure(bool withSaving)
 			string path = directory + "\\" + name;
 			
 			int chars_n = CountChars(path);
-			//cout <<"plik: "<< name << ", " << /*(unsigned int)file_stats.st_size*/chars_n << endl;
 			fileSizes[dirp->d_name] = chars_n;
-			//cout << "\t ***"<<chars_n << endl;
 			fileTypes[dirp->d_name] = "DT_REG";//regular file
 		}
 		else if (dirp->d_type == DT_DIR )
 		{
-			//cout << "Katalog: "<<name << endl;
 			string path = directory + "\\" + name;
 			if (name != "." && name != "..")
 			{
@@ -273,10 +262,6 @@ void FileOperator::GetFileStructure(bool withSaving)
 				GetFileStructure(path);
 			}
 		}
-		else
-		{
-			//cout << "inny typ " << dirp->d_name << endl;
-		}
 	}
 	closedir(dp);
 	if (withSaving)
@@ -285,8 +270,6 @@ void FileOperator::GetFileStructure(bool withSaving)
 void FileOperator::GetFileStructure(std::string pathDir)
 {
 	DIR *dp;
-	FILE *fp;
-	int i = 0;
 	struct dirent *dirp;
 	if ((dp = opendir(pathDir.c_str())) == NULL)
 	{
@@ -303,7 +286,6 @@ void FileOperator::GetFileStructure(std::string pathDir)
 			string path = pathDir + "\\" + name;
 
 			int chars_n = CountChars(path);
-			//cout << "plik: " << name << ", " << /*(unsigned int)file_stats.st_size*/chars_n << endl;
 			fileSizes[partialPath + "\\" + name] = chars_n;
 			fileTypes[partialPath + "\\" + name] = "DT_REG";//regular file
 
@@ -319,10 +301,6 @@ void FileOperator::GetFileStructure(std::string pathDir)
 				fileTypes[partialPath + "\\" + name] = "DT_DIR";
 				GetFileStructure(path);
 			}
-		}
-		else
-		{
-			//cout << "inny typ " << dirp->d_name << endl;
 		}
 	}
 	closedir(dp);
@@ -355,16 +333,15 @@ int FileOperator::CountChars(string path)
 
 	std::stringstream buffer;
 	buffer << file.rdbuf();
-	std::string x = buffer.str();
 	std::string content=buffer.str();
 
 	file.close();
 	return content.size();
 
 }
+
 void FileOperator::SaveFileStructure(std::string fileName)
 {
-	cout << "Zapis!\n";
 	ofstream os(fileName);
 
 	for (int i = 0; i < fileNames.size(); i++)
@@ -372,7 +349,6 @@ void FileOperator::SaveFileStructure(std::string fileName)
 		string name = fileNames[i];
 		os << name << " " << fileTypes[name] << " " << fileSizes[name];
 		os << endl;
-	
 	}
 	os.close();
 
@@ -452,7 +428,7 @@ bool FileOperator::ConfigurationSet()
 }
 void FileOperator::LoadFileStructure(std::string fileName)
 {
-	fileNames.clear(); fileTypes.clear(); fileSizes.clear();
+	fileNames.clear(); fileTypes.clear(); fileSizes.clear(); 
 	ifstream is("structure.txt");		//name type size
 	while (!is.eof())
 	{
@@ -460,17 +436,23 @@ void FileOperator::LoadFileStructure(std::string fileName)
 		getline(is, line);
 		if (!line.empty())
 		{
-			size_t pos1 = line.find_first_of(" ");
-
-			string name = line.substr(0, pos1);
+			size_t pos = line.find_first_of(" ");
+			
+			//name
+			string name = line.substr(0, pos);
 			fileNames.push_back(name);
-			line = line.substr(pos1 + 1, line.length());
+			line = line.substr(pos + 1, line.length());
 
-			size_t pos2 = line.find_first_of(" ");
-			string type = line.substr(0, pos2);
+			//type
+			pos = line.find_first_of(" ");
+			string type = line.substr(0, pos);
 			fileTypes[name] = type;
+			line = line.substr(pos + 1, line.length());
 
-			string size = line.substr(pos2, name.length() - 1);
+
+			//size
+			pos = line.find_first_of(" ");
+			string size = line.substr(0,pos);
 			istringstream iss(size);
 			int fileSize;
 			iss >> fileSize;

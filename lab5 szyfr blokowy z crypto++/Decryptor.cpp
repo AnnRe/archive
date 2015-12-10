@@ -17,7 +17,6 @@ Decryptor::~Decryptor()
 
 void Decryptor::Decrypt()//TODO:key!
 {
-	std::cout << cipherText << std::endl;
 	byte previousEncryptedTextBlock[AES::BLOCKSIZE];
 	crypto.GetFirstG();
 	std::string decryptedText = "";
@@ -40,7 +39,7 @@ void Decryptor::Decrypt()//TODO:key!
 		
 		for (int j = 0; j < AES::BLOCKSIZE; j++) //H xor textblock
 		{
-			//encryptedTextBlock[j] -= crypto.H[j];
+			encryptedTextBlock[j] -= crypto.H[j];
 			previousEncryptedTextBlock[j] = (unsigned)encryptedTextBlock[j];
 		}
 		//g1
@@ -53,7 +52,7 @@ void Decryptor::Decrypt()//TODO:key!
 			decryptedTextBlock[j] = encryptedTextBlock[j];
 
 		//block ^G
-		for (int j = 0; j < AES::BLOCKSIZE; j++)s
+		for (int j = 0; j < AES::BLOCKSIZE; j++)
 		{
 			decryptedTextBlock[j] +=crypto.Gprevious[j];
 		}
@@ -62,7 +61,6 @@ void Decryptor::Decrypt()//TODO:key!
 			decryptedText.push_back(decryptedTextBlock[k]);
 	}
 	dataFileOperator.FilesText = decryptedText;
-	std::cout << decryptedText << std::endl;
 }
 void Decryptor::SaveToFiles()//TODO:check unix/windows/mac
 {
@@ -83,22 +81,20 @@ void Decryptor::SaveToFiles()//TODO:check unix/windows/mac
 	//recreating files
 	int wsk = 0;
 	std::string d = dataFileOperator.directory;
-	std::cout << "dir:" << d << std::endl;
 	for (int i = 0; i < dataFileOperator.fileNames.size();i++)
 	if (dataFileOperator.fileTypes[dataFileOperator.fileNames[i]] == "DT_REG")
 	{
-		std::cout << "name: " << dataFileOperator.fileNames[i] << std::endl;
 		std::string fileContent = "";
 		std::string x = dataFileOperator.FilesText;
-		for (int j = 0; j < dataFileOperator.fileSizes[dataFileOperator.fileNames[i]];j++)
-		{
-			fileContent.push_back(dataFileOperator.FilesText[wsk++]);
-		}
+			for (int j = 0; j < dataFileOperator.fileSizes[dataFileOperator.fileNames[i]]; j++)
+			{
+				fileContent.push_back(dataFileOperator.FilesText[wsk++]);
+			}
 		//saving tt txt file
 		std::string nameWithoutExtension = FileOperator::GetName(dataFileOperator.fileNames[i]);
 		std::string nametxt = nameWithoutExtension + ".txt";
 
-		std::ofstream ofs(dataFileOperator.directory + "-backup\\" + nametxt);
+		std::ofstream ofs(dataFileOperator.directory + "-backup\\" + nametxt, std::ios::binary);
 		ofs << fileContent;
 		ofs.close();
 
@@ -153,6 +149,5 @@ void Decryptor::LoadEncryptedFile()//Joins all blocks to one
 	CipherText = archiveLoader.GetFilesContent(n);
 	size_t poz = dataFileOperator.numberOfDigits + CryptoPP::AES::BLOCKSIZE;
 	cipherText = CipherText.substr(poz+2);
-	std::cout << "====\n" << cipherText << "====\n" << std::endl;
 }
 

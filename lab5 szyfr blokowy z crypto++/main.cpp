@@ -78,7 +78,6 @@ int main(int argc, char* argv[]) {
 			cout << "Logowanie pomyœlne"<<endl;
 			
 			FileEncrypter encrypter;
-			cout << "Po encrypter" << endl;
 			bool run = true; system("cls");
 			while (run)
 			{

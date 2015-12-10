@@ -15,10 +15,7 @@ void Crypto::GetFirstG()
 {
 	//std::cout << "---Getting first G \n---";
 	//G0
-	byte* licznik = nullptr;
 	md5.Update(iv, sizeof(iv));
-	/*cout << "sizeof licznik " << sizeof(licznik) << endl;
-	md5.Update(licznik, sizeof(licznik));*/
 	md5.Update(key, sizeof(key));
 	md5.TruncatedFinal(G, CryptoPP::AES::BLOCKSIZE);
 }
