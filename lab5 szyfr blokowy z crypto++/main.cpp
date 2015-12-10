@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
 	}
 	else if (user.licenceState == 0)
 	{
-		cout << "Nie jestes zarejestrowany, twoje ID to:" << endl<<user.GenerateId()<<endl;
+		cout << "\n\tNie jestes zarejestrowany, twoje ID to: " << endl<<user.GenerateId()<<endl;
 		
 		cout << "Przeœlij go do dystrybutora, a otrzymasz klucz." << endl;
 	} 
@@ -98,12 +98,19 @@ int main(int argc, char* argv[]) {
 					break; 
 				case 'D':case'd':
 						encrypter.Decrypt();
-						//system("cls");
+						getchar();
+						system("cls");
 						break;
 				case 'O':case'o':
 					encrypter.Refresh();
-					//system("cls");
+					getchar();
+					system("cls");
 					break;
+				case 'Z':case'z':
+					user.ChangePassword();
+					break;
+				case'C':case'c':
+					encrypter.ChangePath();
 				default:
 					run = false;
 				}
