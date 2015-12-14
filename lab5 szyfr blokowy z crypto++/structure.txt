@@ -1,8 +1,9 @@
+desktop.ini DT_REG 46
 katalog1 DT_DIR -1
-katalog1\\katalog2 DT_DIR -1
-katalog1\katalog2\\aplik2.txt DT_REG 172
-katalog1\katalog2\\dfsd.rtf DT_REG 1818
-katalog1\katalog2\\jhkj.odp DT_REG 112
-katalog1\\rysunek.odg DT_REG 108
-olik3.nb DT_REG 13
-plik2.txt DT_REG 171
+katalog1\katalog2 DT_DIR -1
+katalog1\katalog2\aplik2.txt DT_REG 177
+katalog1\katalog2\dfsd.rtf DT_REG 1833
+katalog1\katalog2\jhkj.odp DT_REG 8893
+katalog1\rysunek.odg DT_REG 8368
+olik3.nb DT_REG 12
+plik2.txt DT_REG 175

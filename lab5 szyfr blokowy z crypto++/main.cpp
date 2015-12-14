@@ -42,9 +42,9 @@ int main(int argc, char* argv[]) {
 	}
 	else if (user.licenceState == 0)
 	{
-		cout << "\n\tNie jestes zarejestrowany, twoje ID to: " << endl<<user.GenerateId()<<endl;
+		cout << "\n\tNie jestes zarejestrowany, twoje ID to: " <<user.GenerateId()<<endl;
 		
-		cout << "Przeœlij go do dystrybutora, a otrzymasz klucz." << endl;
+		cout << "Przeslij go do dystrybutora, a otrzymasz klucz." << endl;
 	} 
 	else
 	{
@@ -71,11 +71,14 @@ int main(int argc, char* argv[]) {
 			login = true;
 		}
 		else
-			login=user.GetNewPassword();
+		{
+			login = user.GetNewPassword();
+			login = true;
+		}
 		if (login)
 		{
 			system("cls");
-			cout << "Logowanie pomyœlne"<<endl;
+			cout << "Logowanie pomyslne"<<endl;
 			
 			FileEncrypter encrypter;
 			encrypter.GetPass(user.MainPassword);
@@ -108,19 +111,19 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'Z':case'z':
 					user.ChangePassword();
+					getchar();
+					system("cls");
 					break;
 				case'C':case'c':
 					encrypter.ChangePath();
+					getchar();
+					system("cls");
+					break;
 				default:
 					run = false;
 				}
 			}
-			encrypter.Encrypt();
-
 		}
-
-		
-		
 	}
 
 	system("PAUSE");

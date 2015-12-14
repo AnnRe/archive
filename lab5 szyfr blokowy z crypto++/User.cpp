@@ -229,7 +229,7 @@ void User::SavePasswd(std::string mainPasswd)
 void User::GetPassword()
 {
 
-	std::cout << "Podaj haslo do aplikacji:";
+	std::cout << "Podaj haslo do aplikacji: ";
 	std::cin >> MainPassword;
 }
 
